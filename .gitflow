@@ -1,0 +1,20 @@
+# Agro Mandiri Git Flow Configuration
+
+# Branch Structure
+- main: Production-ready code, deployed to live environment
+- develop: Development branch containing latest features in progress
+- feature/*: Individual feature branches (branch from develop)
+- hotfix/*: Emergency fixes (branch from main)
+- release/*: Release preparation branches
+
+# Workflow
+1. Development happens on feature/* branches
+2. Completed features merge to develop
+3. Release candidates move from develop to release/* branches
+4. After testing, release/* branches merge to main and develop
+5. Hotfixes branch from main, then merge to both main and develop
+
+# Deployment
+- main branch: Auto-deployed to production
+- develop branch: Manual deployment to staging
+- preview branches: For testing specific features

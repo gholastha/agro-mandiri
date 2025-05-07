@@ -7,7 +7,8 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "new-sam": true
+      "develop": false,
+      "preview": false
     }
   }
 }

@@ -7,3 +7,17 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Production context: all deploys from the main branch 
+[context.production]
+  publish = ".next"
+  command = "npm run build"
+
+# Deploy Preview context: previews for pull/merge requests
+[context.deploy-preview]
+  publish = ".next"
+  command = "npm run build"
+
+# Branch deploy context: branches that aren't main
+[context.branch-deploy]
+  command = "npm run build"
