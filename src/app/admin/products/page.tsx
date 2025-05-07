@@ -1,11 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProducts } from '@/api/hooks/useProducts';
 import { useCategories } from '@/api/hooks/useCategories';
-import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Product } from '@/api/types/models';
 
@@ -18,14 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+// Badge will be used by child components
 
 import {
   Search,
-  Filter,
   Plus,
   Loader2,
-  ArrowUpDown,
 } from 'lucide-react';
 
 import {
@@ -43,6 +39,8 @@ import { BulkDeleteDialog } from '@/components/admin/products/bulk-delete-dialog
 import { ProductViewSwitch, ViewMode } from '@/components/admin/products/product-view-switch';
 import { ProductGrid } from '@/components/admin/products/product-grid';
 import { ProductList } from '@/components/admin/products/product-list';
+import { PageBreadcrumbs } from '@/components/admin/layout/breadcrumbs';
+import { Pagination, PaginationSummary } from '@/components/ui/pagination';
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -52,12 +50,20 @@ export default function ProductsPage() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12; // Default items per page
 
   const { data: products, isLoading: productsLoading, error: productsError, refetch } = useProducts();
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: categories } = useCategories();
 
-  // Handle sorting
-  const handleSort = (field: string) => {
+  // Sorting is handled by sort state (sortField and sortDirection)
+  // Currently used directly by the filtered products logic below
+  // If we need a UI handler in the future, we would implement:
+  /*
+  const handleSortChange = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -65,36 +71,69 @@ export default function ProductsPage() {
       setSortDirection('asc');
     }
   };
+  */
 
   // Filter and sort products
-  const filteredProducts = products
-    ? products
-        .filter((product) => {
-          const matchesSearch = searchQuery
-            ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              (product.description || '').toLowerCase().includes(searchQuery.toLowerCase())
-            : true;
+  const filteredProducts = useMemo(() => {
+    return products
+      ? products
+          .filter((product) => {
+            const matchesSearch = searchQuery
+              ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (product.description || '').toLowerCase().includes(searchQuery.toLowerCase())
+              : true;
 
-          const matchesCategory =
-            categoryFilter === 'all' || product.category_id === categoryFilter;
+            const matchesCategory =
+              categoryFilter === 'all' || product.category_id === categoryFilter;
 
-          return matchesSearch && matchesCategory;
-        })
-        .sort((a, b) => {
-          let comparison = 0;
+            return matchesSearch && matchesCategory;
+          })
+          .sort((a, b) => {
+            let comparison = 0;
 
-          if (sortField === 'name') {
-            comparison = a.name.localeCompare(b.name);
-          } else if (sortField === 'price') {
-            comparison = a.price - b.price;
-          } else if (sortField === 'stock') {
-            comparison = a.stock_quantity - b.stock_quantity;
-          }
+            if (sortField === 'name') {
+              comparison = a.name.localeCompare(b.name);
+            } else if (sortField === 'price') {
+              comparison = a.price - b.price;
+            } else if (sortField === 'stock') {
+              comparison = a.stock_quantity - b.stock_quantity;
+            }
 
-          return sortDirection === 'desc' ? comparison * -1 : comparison;
-        })
-    : [];
+            return sortDirection === 'desc' ? comparison * -1 : comparison;
+          })
+      : [];
+  }, [products, searchQuery, categoryFilter, sortField, sortDirection]);
 
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, categoryFilter, sortField, sortDirection]);
+
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  
+  // Get paginated products
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage, itemsPerPage]);
+  
+  // Handle page change
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+  
+  // Toggle selection mode
+  const toggleSelectionMode = useCallback(() => {
+    setIsSelectionMode(prev => !prev);
+    // Clear selections when exiting selection mode
+    if (isSelectionMode) {
+      setSelectedProducts([]);
+    }
+  }, [isSelectionMode]);
+  
   // Handle product selection for bulk operations
   const handleSelectProduct = (product: Product, isSelected: boolean) => {
     if (isSelected) {
@@ -116,6 +155,7 @@ export default function ProductsPage() {
   // Refresh products after bulk operations
   const handleBulkOperationSuccess = () => {
     setSelectedProducts([]);
+    setIsSelectionMode(false); // Exit selection mode after operation
     refetch();
   };
 
@@ -126,6 +166,9 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumbs */}
+      <PageBreadcrumbs />
+      
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Produk</h1>
         <div className="flex items-center space-x-2">
@@ -177,17 +220,53 @@ export default function ProductsPage() {
             </div>
           </div>
 
-          <div className="mb-4 flex justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                {selectedProducts.length} dari {filteredProducts.length} produk dipilih
-              </p>
+          <div className="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-4">
+              {isSelectionMode ? (
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-muted-foreground">
+                    {selectedProducts.length} dari {filteredProducts.length} produk dipilih
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleSelectAll(true)}
+                  >
+                    Pilih Semua
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleSelectionMode}
+                  >
+                    Batal
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={toggleSelectionMode}
+                  >
+                    Pilih
+                  </Button>
+                  
+                  <PaginationSummary
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    itemsPerPage={itemsPerPage}
+                    totalItems={filteredProducts.length}
+                  />
+                </div>
+              )}
             </div>
             <div>
-              <BulkDeleteDialog 
-                selectedProducts={selectedProducts} 
-                onSuccess={handleBulkOperationSuccess} 
-              />
+              {isSelectionMode && (
+                <BulkDeleteDialog 
+                  selectedProducts={selectedProducts} 
+                  onSuccess={handleBulkOperationSuccess} 
+                />
+              )}
             </div>
           </div>
 
@@ -207,29 +286,45 @@ export default function ProductsPage() {
               </Button>
             </div>
           ) : viewMode === 'grid' ? (
-            <ProductGrid 
-              products={filteredProducts} 
+            <ProductGrid
+              products={paginatedProducts}
               selectedProducts={selectedProducts}
-              onSelectProduct={handleSelectProduct} 
+              onSelectProduct={handleSelectProduct}
+              selectionMode={isSelectionMode}
             />
           ) : (
-            <div className="rounded-md border">
-              <ProductList 
-                products={filteredProducts}
-                selectedProducts={selectedProducts}
-                onSelectProduct={handleSelectProduct}
-                onSelectAll={handleSelectAll}
-              />
-            </div>
+            <ProductList
+              products={paginatedProducts}
+              selectedProducts={selectedProducts}
+              onSelectProduct={handleSelectProduct}
+              onSelectAll={handleSelectAll}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              selectionMode={isSelectionMode}
+              onSortChange={(field) => {
+                if (sortField === field) {
+                  setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                } else {
+                  setSortField(field);
+                  setSortDirection('asc');
+                }
+                setCurrentPage(1); // Reset to first page on sort change
+              }}
+            />
           )}
         </CardContent>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground">
             Menampilkan {filteredProducts.length} dari {products?.length || 0} produk
           </div>
-          <div className="space-x-2">
-            {/* Pagination will be implemented here */}
-          </div>
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              className="mt-2 sm:mt-0"
+            />
+          )}
         </CardFooter>
       </Card>
     </div>

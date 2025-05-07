@@ -21,6 +21,11 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
   const { user, signOut } = useAuthContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // This function is only used for mobile sidebar toggling now
+  const handleMobileMenuClick = () => {
+    onMenuClick();
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -28,15 +33,17 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+      {/* Mobile Menu Toggle */}
       <Button 
         variant="ghost" 
         size="icon" 
         className="md:hidden" 
-        onClick={onMenuClick}
+        onClick={handleMobileMenuClick}
       >
         <Menu className="h-5 w-5" />
         <span className="sr-only">Toggle menu</span>
       </Button>
+      
       <div className="flex-1"></div>
       
       <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>

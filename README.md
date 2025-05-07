@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agro Mandiri Dashboard
+
+A modern admin dashboard for Agro Mandiri built with Next.js, Supabase, and Tailwind CSS. This dashboard provides comprehensive analytics, product management, order tracking, and real-time updates for business operations.
 
 ## Getting Started
 

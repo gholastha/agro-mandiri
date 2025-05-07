@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+// No useState needed
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/api/types/models';
@@ -15,9 +15,10 @@ interface ProductGridProps {
   products: Product[];
   selectedProducts: Product[];
   onSelectProduct: (product: Product, isSelected: boolean) => void;
+  selectionMode?: boolean;
 }
 
-export function ProductGrid({ products, selectedProducts, onSelectProduct }: ProductGridProps) {
+export function ProductGrid({ products, selectedProducts, onSelectProduct, selectionMode = false }: ProductGridProps) {
   const router = useRouter();
   
   const isSelected = (productId: string) => {
@@ -33,13 +34,15 @@ export function ProductGrid({ products, selectedProducts, onSelectProduct }: Pro
       {products.map((product) => (
         <Card key={product.id} className="overflow-hidden">
           <div className="relative h-48 w-full bg-muted">
-            <div className="absolute left-2 top-2 z-10">
-              <Checkbox 
-                checked={isSelected(product.id)} 
-                onCheckedChange={(checked: boolean) => handleCheckboxChange(product, checked)}
-                className="h-5 w-5 bg-white"
-              />
-            </div>
+            {selectionMode && (
+              <div className="absolute left-2 top-2 z-10">
+                <Checkbox 
+                  checked={isSelected(product.id)} 
+                  onCheckedChange={(checked: boolean) => handleCheckboxChange(product, checked)}
+                  className="h-5 w-5 bg-white"
+                />
+              </div>
+            )}
             {!product.is_active && (
               <div className="absolute right-2 top-2 z-10">
                 <Badge variant="destructive">Nonaktif</Badge>

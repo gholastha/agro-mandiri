@@ -11,8 +11,11 @@ import {
   Users,
   FileText,
   Settings,
-  LogOut
+  LogOut,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useAuthContext } from '@/context/auth-context';
 
 const menuItems = [
@@ -53,7 +56,12 @@ const menuItems = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
+}
+
+export function Sidebar({ isCollapsed = false, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname();
   const { signOut } = useAuthContext();
 
@@ -62,16 +70,45 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex h-full w-64 flex-col bg-background border-r">
-      <div className="flex h-16 items-center border-b px-6">
+    <div className={cn(
+      "flex h-full flex-col bg-background border-r transition-all duration-300",
+      isCollapsed ? "w-20" : "w-64"
+    )}>
+      <div className="flex h-16 items-center justify-between border-b px-4">
         <Link href="/admin" className="flex items-center gap-2 font-semibold">
-          <span className="text-xl">Agro Mandiri</span>
+          {isCollapsed ? (
+            <span className="text-xl">AM</span>
+          ) : (
+            <span className="text-xl">Agro Mandiri</span>
+          )}
         </Link>
+        {onToggleCollapse && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleCollapse}
+            className="h-8 w-8"
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
+        )}
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-2 text-sm">
           {menuItems.map((item, index) => {
-            const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+            // Special check for Dashboard item to avoid it being active for all admin pages
+            const isDashboard = item.href === '/admin';
+            
+            // If it's the dashboard, it's only active when the path is exactly '/admin'
+            // For other items, we use the normal check (exact match or child paths)
+            const isActive = isDashboard
+              ? pathname === '/admin'
+              : pathname === item.href || pathname?.startsWith(`${item.href}/`);
             
             return (
               <Link
@@ -83,9 +120,10 @@ export function Sidebar() {
                     ? 'bg-secondary text-secondary-foreground'
                     : 'text-muted-foreground hover:bg-secondary/70 hover:text-secondary-foreground'
                 )}
+                title={isCollapsed ? item.title : undefined}
               >
                 <item.icon className="h-4 w-4" />
-                {item.title}
+                {!isCollapsed && <span>{item.title}</span>}
               </Link>
             );
           })}
@@ -95,9 +133,10 @@ export function Sidebar() {
         <button
           onClick={handleSignOut}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all hover:bg-destructive/50 hover:text-destructive-foreground"
+          title={isCollapsed ? "Keluar" : undefined}
         >
           <LogOut className="h-4 w-4" />
-          Keluar
+          {!isCollapsed && <span>Keluar</span>}
         </button>
       </div>
     </div>

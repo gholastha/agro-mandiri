@@ -15,6 +15,17 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Handle mobile sidebar open/close
+  const toggleMobileSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+  
+  // Handle sidebar collapse (desktop only)
+  const toggleSidebarCollapse = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -56,14 +67,19 @@ export default function AdminLayout({
     <QueryProvider>
       <AuthProvider>
         <div className="flex min-h-screen flex-col">
-          <Header onMenuClick={() => setSidebarOpen(true)} />
+          <Header 
+            onMenuClick={toggleMobileSidebar} 
+          />
           <div className="flex flex-1">
             <div
-              className={`fixed inset-y-0 z-50 flex w-64 flex-col transform transition-transform duration-300 md:translate-x-0 md:shadow-none ${
+              className={`fixed inset-y-0 z-50 flex flex-col transform transition-all duration-300 md:translate-x-0 md:shadow-none ${
                 sidebarOpen ? 'translate-x-0 shadow-lg' : '-translate-x-full'
               }`}
             >
-              <Sidebar />
+              <Sidebar 
+                isCollapsed={sidebarCollapsed}
+                onToggleCollapse={toggleSidebarCollapse}
+              />
             </div>
             <div
               className={`fixed inset-0 z-40 bg-background/80 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
@@ -71,7 +87,7 @@ export default function AdminLayout({
               }`}
               onClick={() => setSidebarOpen(false)}
             />
-            <main className="flex-1 md:pl-64">
+            <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'md:pl-20' : 'md:pl-64'}`}>
               <div className="container mx-auto p-6">
                 {children}
               </div>
