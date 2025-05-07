@@ -3,21 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useProducts, useDeleteProduct } from '@/api/hooks/useProducts';
+import { useProducts } from '@/api/hooks/useProducts';
 import { useCategories } from '@/api/hooks/useCategories';
 import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Product } from '@/api/types/models';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import {
   Select,
   SelectContent,
@@ -31,11 +24,7 @@ import {
   Search,
   Filter,
   Plus,
-  Edit,
-  Trash,
   Loader2,
-  Check,
-  X,
   ArrowUpDown,
 } from 'lucide-react';
 
@@ -48,7 +37,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-import type { Product } from '@/api/types/models';
+// Import new components
+import { BulkImportDialog } from '@/components/admin/products/bulk-import-dialog';
+import { BulkDeleteDialog } from '@/components/admin/products/bulk-delete-dialog';
+import { ProductViewSwitch, ViewMode } from '@/components/admin/products/product-view-switch';
+import { ProductGrid } from '@/components/admin/products/product-grid';
+import { ProductList } from '@/components/admin/products/product-list';
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -56,10 +50,11 @@ export default function ProductsPage() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
-  const { data: products, isLoading: productsLoading, error: productsError } = useProducts();
+  const { data: products, isLoading: productsLoading, error: productsError, refetch } = useProducts();
   const { data: categories, isLoading: categoriesLoading } = useCategories();
-  const { mutateAsync: deleteProduct, isPending: isDeleting } = useDeleteProduct();
 
   // Handle sorting
   const handleSort = (field: string) => {
@@ -100,6 +95,30 @@ export default function ProductsPage() {
         })
     : [];
 
+  // Handle product selection for bulk operations
+  const handleSelectProduct = (product: Product, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedProducts([...selectedProducts, product]);
+    } else {
+      setSelectedProducts(selectedProducts.filter(p => p.id !== product.id));
+    }
+  };
+
+  // Handle select all products
+  const handleSelectAll = (isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedProducts(filteredProducts);
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  // Refresh products after bulk operations
+  const handleBulkOperationSuccess = () => {
+    setSelectedProducts([]);
+    refetch();
+  };
+
   // Handle errors
   if (productsError) {
     toast.error('Gagal memuat produk. Silakan coba lagi.');
@@ -109,10 +128,13 @@ export default function ProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Produk</h1>
-        <Button onClick={() => router.push('/admin/products/new')}>
-          <Plus className="mr-2 h-4 w-4" />
-          Tambah Produk
-        </Button>
+        <div className="flex items-center space-x-2">
+          <BulkImportDialog />
+          <Button onClick={() => router.push('/admin/products/new')}>
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah Produk
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -134,7 +156,7 @@ export default function ProductsPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-3">
               <Select
                 value={categoryFilter}
                 onValueChange={setCategoryFilter}
@@ -151,6 +173,21 @@ export default function ProductsPage() {
                   ))}
                 </SelectContent>
               </Select>
+              <ProductViewSwitch viewMode={viewMode} onChange={setViewMode} />
+            </div>
+          </div>
+
+          <div className="mb-4 flex justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                {selectedProducts.length} dari {filteredProducts.length} produk dipilih
+              </p>
+            </div>
+            <div>
+              <BulkDeleteDialog 
+                selectedProducts={selectedProducts} 
+                onSuccess={handleBulkOperationSuccess} 
+              />
             </div>
           </div>
 
@@ -158,122 +195,31 @@ export default function ProductsPage() {
             <div className="flex h-60 items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="flex h-60 flex-col items-center justify-center space-y-3">
+              <p className="text-lg font-medium">Tidak ada produk yang ditemukan</p>
+              <p className="text-sm text-muted-foreground">
+                Coba ubah filter atau tambahkan produk baru
+              </p>
+              <Button onClick={() => router.push('/admin/products/new')}>
+                <Plus className="mr-2 h-4 w-4" />
+                Tambah Produk
+              </Button>
+            </div>
+          ) : viewMode === 'grid' ? (
+            <ProductGrid 
+              products={filteredProducts} 
+              selectedProducts={selectedProducts}
+              onSelectProduct={handleSelectProduct} 
+            />
           ) : (
             <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[50px]">No</TableHead>
-                    <TableHead 
-                      className="cursor-pointer"
-                      onClick={() => handleSort('name')}
-                    >
-                      <div className="flex items-center">
-                        Nama Produk
-                        {sortField === 'name' && (
-                          <ArrowUpDown 
-                            className={`ml-2 h-4 w-4 ${sortDirection === 'desc' ? 'rotate-180 transform' : ''}`} 
-                          />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead>Kategori</TableHead>
-                    <TableHead 
-                      className="cursor-pointer text-right"
-                      onClick={() => handleSort('price')}
-                    >
-                      <div className="flex items-center justify-end">
-                        Harga
-                        {sortField === 'price' && (
-                          <ArrowUpDown 
-                            className={`ml-2 h-4 w-4 ${sortDirection === 'desc' ? 'rotate-180 transform' : ''}`} 
-                          />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer text-center"
-                      onClick={() => handleSort('stock')}
-                    >
-                      <div className="flex items-center justify-center">
-                        Stok
-                        {sortField === 'stock' && (
-                          <ArrowUpDown 
-                            className={`ml-2 h-4 w-4 ${sortDirection === 'desc' ? 'rotate-180 transform' : ''}`} 
-                          />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead className="text-center">Status</TableHead>
-                    <TableHead className="text-right">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredProducts.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center">
-                        Tidak ada produk yang ditemukan.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredProducts.map((product, index) => (
-                      <TableRow key={product.id}>
-                        <TableCell className="font-medium">{index + 1}</TableCell>
-                        <TableCell>{product.name}</TableCell>
-                        <TableCell>
-                          {product.category?.name || 'Tanpa Kategori'}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrency(product.price)}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {product.stock_quantity}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {product.is_active ? (
-                            <Badge variant="default" className="bg-green-500">
-                              <Check className="mr-1 h-3 w-3" />
-                              Aktif
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-muted-foreground">
-                              <X className="mr-1 h-3 w-3" />
-                              Nonaktif
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => router.push(`/admin/products/edit?id=${product.id}`)}
-                            >
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="text-destructive hover:bg-destructive/10"
-                              onClick={() => {
-                                if (confirm('Yakin ingin menghapus produk ini?')) {
-                                  deleteProduct(product.id).then(() => {
-                                    toast.success('Produk berhasil dihapus');
-                                  });
-                                }
-                              }}
-                            >
-                              <Trash className="h-4 w-4" />
-                              <span className="sr-only">Delete</span>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+              <ProductList 
+                products={filteredProducts}
+                selectedProducts={selectedProducts}
+                onSelectProduct={handleSelectProduct}
+                onSelectAll={handleSelectAll}
+              />
             </div>
           )}
         </CardContent>

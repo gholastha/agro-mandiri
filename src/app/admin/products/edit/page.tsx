@@ -27,7 +27,7 @@ export default function EditProductPage() {
     setIsSubmitting(true);
     try {
       await mutateAsync(data);
-      toast.success('Produk berhasil diperbarui');
+      // Toast is already shown in the hook
       router.push('/admin/products');
     } catch (error) {
       console.error('Error updating product:', error);

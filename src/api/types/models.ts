@@ -8,6 +8,7 @@ export interface Product {
   price: number;
   sale_price: number | null;
   stock_quantity: number;
+  unit_type: string;
   is_featured: boolean;
   is_active: boolean;
   category_id: string | null;
@@ -62,6 +63,7 @@ export interface ProductFormValues {
   price: number;
   sale_price: number | null;
   stock_quantity: number;
+  unit_type: string;
   is_featured: boolean;
   is_active: boolean;
   category_id: string | null;

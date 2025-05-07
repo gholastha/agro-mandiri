@@ -47,6 +47,7 @@ const productSchema = z.object({
   price: z.coerce.number().positive('Harga harus lebih dari 0'),
   sale_price: z.coerce.number().nullable(),
   stock_quantity: z.coerce.number().int().nonnegative('Stok tidak boleh negatif'),
+  unit_type: z.string().min(1, 'Unit produk harus dipilih'),
   is_featured: z.boolean().default(false),
   is_active: z.boolean().default(true),
   category_id: z.string().nullable(),
@@ -81,6 +82,7 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
       price: product?.price || 0,
       sale_price: product?.sale_price || null,
       stock_quantity: product?.stock_quantity || 0,
+      unit_type: product?.unit_type || 'unit',
       is_featured: product?.is_featured || false,
       is_active: product?.is_active !== undefined ? product.is_active : true,
       category_id: product?.category_id || null,
@@ -332,6 +334,34 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
                     placeholder="contoh: Phonska"
                     {...register('brand')}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="unit_type">Satuan Produk</Label>
+                  <Select
+                    value={watch('unit_type')}
+                    onValueChange={(value) => setValue('unit_type', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih satuan produk" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unit">Unit</SelectItem>
+                      <SelectItem value="kg">Kilogram (kg)</SelectItem>
+                      <SelectItem value="gram">Gram (g)</SelectItem>
+                      <SelectItem value="mg">Miligram (mg)</SelectItem>
+                      <SelectItem value="liter">Liter (L)</SelectItem>
+                      <SelectItem value="ml">Mililiter (mL)</SelectItem>
+                      <SelectItem value="sak">Sak</SelectItem>
+                      <SelectItem value="pak">Pak</SelectItem>
+                      <SelectItem value="box">Box</SelectItem>
+                      <SelectItem value="botol">Botol</SelectItem>
+                      <SelectItem value="pcs">Pieces (pcs)</SelectItem>
+                      <SelectItem value="karung">Karung</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.unit_type && (
+                    <p className="text-sm text-destructive">{errors.unit_type.message}</p>
+                  )}
                 </div>
               </CardContent>
             </Card>

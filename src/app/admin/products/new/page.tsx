@@ -22,7 +22,7 @@ export default function NewProductPage() {
       }
 
       await mutateAsync(data);
-      toast.success('Produk berhasil ditambahkan');
+      // Toast is already shown in the hook
       router.push('/admin/products');
     } catch (error) {
       console.error('Error creating product:', error);
