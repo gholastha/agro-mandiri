@@ -1,0 +1,143 @@
+graph TD
+    A["User Visits Platform
+Homepage
+/app/page.tsx
+UI: Hijau #2E7D32, Putih #FFFFFF
+Mobile-First: 320px-768px"] --> B{User Type?}
+    B -->|Customer| C["Browse Homepage"]
+    B -->|Admin| D["Access Admin Dashboard
+/app/admin/page.tsx
+Supabase Auth: Admin Only
+UI: Menu Samping, Collapsible"]
+
+    %% Customer Flow
+    C --> E["Product Catalog
+/app/products/page.tsx
+Components: ProductCard.tsx
+UI: Card, Border Cokelat #6D4C41 opacity 0.3"]
+    E --> F{Browse By}
+    F -->|Category| G["View Categories
+Pupuk, Pestisida, Benih, Peralatan
+Components: CategoryNav.tsx"]
+    F -->|Search| H["Search Products
+Store: /stores/search.ts
+Components: Input.tsx
+UI: Input 48px"]
+    G --> I["Apply Filters
+Store: /stores/search.ts"]
+    H --> I
+    I --> J["Product Details
+/app/products/[id]/page.tsx
+Components: Carousel.tsx, Tabs.tsx
+UI: Carousel 360x200px, Tabs Border Cokelat opacity 0.3
+Lencana: 24x24px, Emas #FFD700, Pulse"]
+    J --> K{Add to Cart?}
+    K -->|Yes| L["Add to Cart
+Store: /stores/cart.ts
+UI: Button Emas, Border Cokelat opacity 0.5"]
+    K -->|No| E
+    L --> M{Continue Shopping?}
+    M -->|Yes| E
+    M -->|No| N["Shopping Cart
+/app/cart/page.tsx
+Components: CartItem.tsx
+UI: Kotak Putih, Border Cokelat opacity 0.3
+Button Checkout: Full-Width, Emas"]
+
+    %% Authentication Flow
+    N --> O{User Authenticated?
+Lib: /lib/supabase.ts
+Supabase Auth}
+    O -->|No| P["Authentication
+/app/auth/login/page.tsx
+Components: LoginForm.tsx"]
+    P --> Q{Login Method}
+    Q -->|Phone OTP| R["Enter Phone Number
+UI: Input 48px"]
+    Q -->|Google| S[Google OAuth]
+    R --> T[Verify OTP]
+    S --> U[Complete Authentication]
+    T --> U
+    U --> V[Return to Cart]
+    O -->|Yes| V
+
+    %% Checkout Flow
+    V --> W["Checkout
+/app/checkout/page.tsx
+Components: ShippingForm.tsx
+Validation: Zod /lib/validators.ts
+UI: Form Satu Kolom, Button 44x44px"]
+    W --> X["Enter Shipping Details
+UI: Input 48px"]
+    X --> Y["Select Payment Method
+UI: Button Emas, COD Supported"]
+    Y --> Z["Place Order
+Supabase: Insert to orders table"]
+    Z --> AA["Order Confirmation
+UI: Text Emas, Border Cokelat opacity 0.3"]
+
+    %% Admin Dashboard Flow
+    D --> AB["Admin Functions
+Components: AdminTable.tsx, AdminForm.tsx
+UI: Tabel Putih, Border Cokelat opacity 0.3"]
+    AB -->|Product Management| AC["Add/Edit/Delete Products
+Supabase: products table
+UI: Form 48px, Button Emas"]
+    AB -->|Category Management| AD["Add/Edit/Delete Categories
+Supabase: categories table"]
+    AB -->|Order Management| AE["Process Orders
+Supabase: orders table
+UI: Tabel dengan Status"]
+    AB -->|Menu Config| AF["Configure Mega Menu
+Supabase: menu table
+UI: Drag-and-Drop"]
+    AC --> AG[Return to Dashboard]
+    AD --> AG
+    AE --> AG
+    AF --> AG
+
+    %% Figma Integration
+    A --> AH["Figma Wireframe
+Artifact: cd77b3fd-b717-4cc3-8792-39d1d07a0ea8
+Validate: Border Cokelat opacity 0.3-0.5, Lencana Emas"]
+
+    subgraph Mobile-First UI
+    C
+    E
+    F
+    G
+    H
+    I
+    J
+    K
+    L
+    N
+    P
+    R
+    S
+    W
+    X
+    Y
+    Z
+    D
+    AB
+    AC
+    AD
+    AE
+    AF
+    end
+
+    subgraph Refactor Structure
+    AI["Folder Structure
+/app: Pages
+/components: UI Components
+/stores: Zustand Stores
+/lib: Supabase, Validators
+/docs/diagrams: Mermaid"]
+    E --> AI
+    J --> AI
+    N --> AI
+    P --> AI
+    W --> AI
+    D --> AI
+    end
