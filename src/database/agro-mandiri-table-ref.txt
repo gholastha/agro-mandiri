@@ -1,0 +1,294 @@
+Users Table
+user_id UUID (Primary Key)
+user VARCHAR(50) UNIQUE
+email VARCHAR(100) UNIQUE
+hash_password VARCHAR(255)
+role ENUM('admin','staff','user')
+status ENUM('active','inactive','blocked')
+last_login TIMESTAMP
+created_on TIMESTAMP
+updated_on TIMESTAMP
+deleted_on TIMESTAMP NULL
+deleted_by UUID NULL
+
+User_Sessions Table
+Session_ID UUID (Primary Key)
+User_ID UUID (Foreign Key)
+Token VARCHAR(255) // example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+IP_Address VARCHAR(45) // example: 192.168.1.1
+User_Agent TEXT // example: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+Expired_At TIMESTAMP // example: 2024-03-21 15:30:00
+Created_At TIMESTAMP // example: 2024-03-20 15:30:00
+
+Product_Category Table
+Category_ID UUID (Primary Key)
+Category_Name VARCHAR(100)
+Category_Slug VARCHAR(100)
+Description TEXT
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Product_Type Table
+Category_ID UUID (Primary Key)
+Category_ID UUID (Foreign Key)
+Category_Name VARCHAR(100)
+Category_Slug VARCHAR(100)
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Product Table
+Product_ID UUID (Primary Key)
+SKU VARCHAR(50) UNIQUE
+Product_Name VARCHAR(255)
+Slug VARCHAR(255) UNIQUE
+Category_ID UUID (Foreign Key)
+Type_ID UUID (Foreign Key)
+Short_Description VARCHAR(255)
+Buy_Price DECIMAL(15,2)
+Sell_Price DECIMAL(15,2)
+Weight DECIMAL(10,2)
+P_Dimension DECIMAL(10,2)
+L_Dimension DECIMAL(10,2)
+T_Dimension DECIMAL(10,2)
+Minimum_Stock INT
+Status ENUM('active','inactive','draft')
+Is_Seasonal BOOLEAN
+Season_Start DATE
+Season_End DATE
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+Deleted_At TIMESTAMP NULL
+
+Image_Product Table
+Image_ID UUID (Primary Key)
+Product_ID UUID (Foreign Key)
+Image_URL VARCHAR(255)
+Is_Primary BOOLEAN
+Order INT
+Created_At TIMESTAMP
+
+Variant_Product Table
+Variant_ID UUID (Primary Key)
+Product_ID UUID (Foreign Key)
+Variant_Name VARCHAR(100)
+Variant_SKU VARCHAR(50)
+Additional_Price DECIMAL(15,2)
+Stock INT
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Stock_Log Table
+Stock_Log ID UUID (Primary Key)
+Product_ID UUID (Foreign Key)
+Varian_ID UUID (Foreign Key) NULL
+Change_Type ENUM('in','out','adjustment')
+Amount INT
+Description TEXT
+Batch_Number VARCHAR(50)
+Expired_Date DATE NULL
+Created_At TIMESTAMP
+Created_By UUID (Foreign Key)
+
+Customer_Type Table
+Customer_Type ID UUID (Primary Key)
+Type_Name VARCHAR(50)
+Member_Level ENUM('bronze','silver','gold')
+Minimum_Amount DECIMAL(15,2)
+Discount_Percentage DECIMAL(5,2)
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Customer Table
+Customer_ID UUID (Primary Key)
+User_ID UUID (Foreign Key)
+Customer_Type_ID UUID (Foreign Key)
+Full_Name VARCHAR(100)
+NIK VARCHAR(16)
+Date_of_Birth DATE
+Gender ENUM('L','P')
+Email VARCHAR(100)
+Whatsapp_Number VARCHAR(15)
+Phone_Number VARCHAR(15)
+Point INT DEFAULT 0
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+Deleted_At TIMESTAMP NULL
+
+Customer_Address Table
+Address_ID UUID (Primary Key)
+Customer_ID UUID (Foreign Key)
+Address_Label VARCHAR(50)
+Recipient_Name VARCHAR(100)
+Telephone_Number VARCHAR(15)
+Province_ID INT
+City_ID INT
+Sub-district_ID INT
+Village VARCHAR(100)
+Postal_Code VARCHAR(5)
+Full_Address TEXT
+Reference TEXT
+Main_Is BOOLEAN
+Lat_Coordinate DECIMAL(10,8)
+Long_Coordinate DECIMAL(11,8)
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Transaction Table
+Transaction_ID UUID (Primary Key)
+Transaction_Number VARCHAR(20) UNIQUE
+Customer_ID UUID (Foreign Key)
+Address_ID UUID (Foreign Key)
+Transaction_Status ENUM('pending','processing','shipped','delivered','cancelled')
+Subtotal DECIMAL(15,2)
+Discount_Level DECIMAL(15,2)
+Discount_Promotion DECIMAL(15,2)
+Discount_Voucher DECIMAL(15,2)
+Shipping_Cost DECIMAL(15,2)
+Total DECIMAL(15,2)
+Payment_Method ENUM('transfer','cod','ewallet')
+Payment_Status ENUM('unpaid','paid','expired','refunded')
+Payment_Limit TIMESTAMP
+Buyer_Notes TEXT
+Seller_Notes TEXT
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Transaction_Detail_Table
+Detail_ID UUID (Primary Key)
+Transaction_ID UUID (Foreign Key)
+Product_ID UUID (Foreign Key)
+Varian_ID UUID (Foreign Key) NULL
+Product_Name VARCHAR(255)
+Unit_Price DECIMAL(15,2)
+Amount INT
+Subtotal DECIMAL(15,2)
+Item_Discount DECIMAL(15,2)
+Created_At TIMESTAMP
+
+Payment Table
+Payment_ID UUID (Primary Key)
+Transaction_ID UUID (Foreign Key)
+Provider VARCHAR(50)
+Account_Number VARCHAR(50)
+Account_Name VARCHAR(100)
+Amount DECIMAL(15,2)
+Transfer_Proof VARCHAR(255)
+Status ENUM('pending','verified','rejected')
+Payment_Time TIMESTAMP
+Verified_At TIMESTAMP NULL
+Verified_By UUID NULL
+Created_At TIMESTAMP
+
+Table Shipping
+ID_Shipment UUID (Primary Key)
+ID_Transaction UUID (Foreign Key)
+ID_Fleet UUID (Foreign Key)
+Receipt Number VARCHAR(50)
+Courier VARCHAR(50)
+Estimated_Arrival DATE
+Shipment_Status ENUM('preparing','picked','ondelivery','delivered','failed')
+Pickup_Time TIMESTAMP NULL
+Delivered_Time TIMESTAMP NULL
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Shipment_Tracking Table
+ID_Tracking UUID (Primary Key)
+ID_Shipment UUID (Foreign Key)
+Status VARCHAR(100)
+Location VARCHAR(100)
+Time TIMESTAMP
+Created_At TIMESTAMP
+
+Fleet Table
+Fleet_ID UUID (Primary Key)
+Fleet_Name VARCHAR(100)
+Capacity DECIMAL(10,2)
+Plate_Number VARCHAR(20)
+Status ENUM('available','maintenance','ondelivery')
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Customer_Discount_Level Table
+Discount_Level_ID UUID (Primary Key)
+Member_Level ENUM('bronze','silver','gold')
+Discount_Percentage DECIMAL(5,2)
+Minimum_Purchase DECIMAL(15,2)
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Promotion Table
+Promotion_ID UUID (Primary Key)
+Promotion_Code VARCHAR(50) UNIQUE
+Promotion_Name VARCHAR(100)
+Description TEXT
+Discount_Type ENUM('percentage','fixed')
+Discount_Value DECIMAL(15,2)
+Minimum_Purchase DECIMAL(15,2)
+Maximum_Discount DECIMAL(15,2)
+Eligible_Level JSON
+Quota INT
+Quota_Per_User INT
+Start_Date TIMESTAMP
+End_Date TIMESTAMP
+Status ENUM('active','inactive')
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Voucher Table
+Voucher_ID UUID (Primary Key)
+Voucher_Code VARCHAR(50)
+Voucher_Type ENUM('new_user','birthday','special')
+Voucher_Value DECIMAL(15,2)
+Minimum_Purchase DECIMAL(15,2)
+Maximum_Discount DECIMAL(15,2)
+Is_Percentage BOOLEAN
+Quota
+INT
+TIMESTAMP Start_Date
+End_Date TIMESTAMP
+ENUM status('active','inactive','expired')
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+
+Review Table
+ID_Review UUID (Primary Key)
+Transaction_ID UUID (Foreign Key)
+Product_ID UUID (Foreign Key)
+TINYINT Ratings
+TEXT Comments
+ENUM Status('pending','approved','rejected')
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Review_Image table
+ID_Review_Image UUID (Primary Key)
+ID_Review UUID (Foreign Key)
+Image_URL VARCHAR(255)
+INT sequence
+Created_At TIMESTAMP
+
+Wishlist Table
+ID_Wishlist UUID (Primary Key)
+Customer_ID UUID (Foreign Key)
+Product_ID UUID (Foreign Key)
+Created_At TIMESTAMP
+
+Cart Table
+ID_Cart UUID (Primary Key)
+Customer_ID UUID (Foreign Key)
+Product_ID UUID (Foreign Key)
+UUID (Foreign Key) Variant_ID NULL
+Quantity INT
+Created_At TIMESTAMP
+Updated_At TIMESTAMP
+
+Notification Table
+ID_Notification UUID (Primary Key)
+ID_User UUID (Foreign Key)
+Title VARCHAR(255)
+TEXT Message
+ENUM type('transaction','promo','system')
+Is_Read BOOLEAN
+Created_At TIMESTAMP

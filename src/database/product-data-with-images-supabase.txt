@@ -1,0 +1,73 @@
+
+I have a public "products" bucket with "images" and "product-images" directory.
+
+DELETE "Authenticated Users Can Delete Their Files"
+
+UPDATE "Authenticated Users Can Update Their Files"
+
+INSERT "Authenticated Users Can Upload"
+
+SELECT "Public Access Policy"
+
+To store product data, including images, in your Supabase storage bucket, you can use the Supabase JavaScript client. Below is an example of how to upload product data and images to your "products" bucket, specifically targeting the "images" and "product-images" directories.
+
+Example Code in TypeScript
+First, ensure you have the Supabase client set up in your project. If you haven't done so, install the Supabase client:
+
+bash
+npm install @supabase/supabase-js
+```
+
+```typescript
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabaseUrl = 'https://your-supabase-url.supabase.co';
+const supabaseAnonKey = 'your-anon-key';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Function to upload product data
+async function uploadProductData(product: { name: string; description: string; price: number; imageFile: File }) {
+    // Upload image to the "product-images" directory
+    const { data: imageData, error: imageError } = await supabase.storage
+        .from('products')
+        .upload(`product-images/${product.imageFile.name}`, product.imageFile);
+
+    if (imageError) {
+        console.error('Error uploading image:', imageError);
+        return;
+    }
+
+    // Get the public URL of the uploaded image
+    const imageUrl = supabase.storage.from('products').getPublicUrl(imageData.path).publicURL;
+
+    // Insert product data into the "products" table
+    const { data: productData, error: productError } = await supabase
+        .from('products')
+        .insert([
+            {
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                image_url: imageUrl, // Store the image URL in the product data
+            },
+        ]);
+
+    if (productError) {
+        console.error('Error inserting product data:', productError);
+        return;
+    }
+
+    console.log('Product uploaded successfully:', productData);
+}
+
+// Example usage
+const product = {
+    name: 'Sample Product',
+    description: 'This is a sample product description.',
+    price: 29.99,
+    imageFile: new File(['image content'], 'sample-image.jpg', { type: 'image/jpeg' }), // Replace with actual file
+};
+
+uploadProductData(product);
+```
