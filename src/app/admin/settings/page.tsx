@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { 
@@ -40,45 +40,44 @@ import {
   Bell,
   Loader2,
   Building,
-  Mail,
-  Phone,
   MapPin,
   Globe,
-  Image,
+  Image as ImageIcon,
   Save,
   Facebook,
   Instagram,
   Twitter,
   Youtube,
   MessageSquare,
+  Plus,
 } from 'lucide-react';
 
 // Define validation schema for store settings
 const storeSettingsSchema = z.object({
   store_name: z.string().min(1, 'Nama toko harus diisi'),
-  store_description: z.string().nullable().optional(),
+  store_description: z.string().optional(),
   contact_email: z.string().email('Format email tidak valid'),
-  contact_phone: z.string().nullable().optional(),
-  address: z.string().nullable().optional(),
-  city: z.string().nullable().optional(),
-  province: z.string().nullable().optional(),
-  postal_code: z.string().nullable().optional(),
-  country: z.string().nullable().optional(),
+  contact_phone: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  province: z.string().optional(),
+  postal_code: z.string().optional(),
+  country: z.string().optional(),
   currency: z.string().min(1, 'Mata uang harus diisi'),
-  logo_url: z.string().nullable().optional(),
-  favicon_url: z.string().nullable().optional(),
+  logo_url: z.string().optional(),
+  favicon_url: z.string().optional(),
   social_media: z.object({
-    facebook: z.string().nullable().optional(),
-    instagram: z.string().nullable().optional(),
-    twitter: z.string().nullable().optional(),
-    youtube: z.string().nullable().optional(),
-    whatsapp: z.string().nullable().optional(),
-  }).nullable().optional(),
-  meta_title: z.string().nullable().optional(),
-  meta_description: z.string().nullable().optional(),
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+    twitter: z.string().optional(),
+    youtube: z.string().optional(),
+    whatsapp: z.string().optional(),
+  }).optional(),
+  meta_title: z.string().optional(),
+  meta_description: z.string().optional(),
 });
 
-export default function SettingsPage() {
+export default function SettingsPage(): React.ReactNode {
   const [activeTab, setActiveTab] = useState('store');
   
   // Fetch settings data
@@ -124,7 +123,7 @@ export default function SettingsPage() {
   });
 
   // Update form when store settings are loaded
-  useState(() => {
+  useEffect(() => {
     if (storeSettings) {
       reset({
         store_name: storeSettings.store_name,
@@ -153,7 +152,7 @@ export default function SettingsPage() {
   }, [storeSettings, reset]);
 
   // Handle store settings form submission
-  const onSubmitStoreSettings = async (data: StoreSettingFormValues) => {
+  const onSubmitStoreSettings: SubmitHandler<StoreSettingFormValues> = async (data) => {
     try {
       await updateStoreSettings(data);
     } catch (error) {
@@ -325,7 +324,7 @@ export default function SettingsPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center">
-                      <Image className="mr-2 h-5 w-5" />
+                      <ImageIcon className="mr-2 h-5 w-5" />
                       Media & Branding
                     </CardTitle>
                     <CardDescription>

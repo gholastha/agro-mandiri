@@ -12,7 +12,11 @@ import {
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils';
-import { format, subDays, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
+import format from 'date-fns/format';
+import subDays from 'date-fns/subDays';
+import eachDayOfInterval from 'date-fns/eachDayOfInterval';
+import startOfMonth from 'date-fns/startOfMonth';
+import endOfMonth from 'date-fns/endOfMonth';
 
 type SalesData = {
   date: string;

@@ -33,12 +33,11 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 
-import { ArrowLeft, Loader2, Save, Upload, X } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Upload } from 'lucide-react';
 
 // Define the validation schema
 const productSchema = z.object({
@@ -70,7 +69,7 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('basic');
   const [autoSlug, setAutoSlug] = useState(!product?.slug);
-  const { data: categories, isLoading: loadingCategories } = useCategories();
+  const { data: categories } = useCategories();
   const [productImages, setProductImages] = useState<ProductImage[]>(product?.images || []);
 
   // Initialize the form with default values or product data
@@ -111,20 +110,49 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
   const price = watch('price');
   const formattedPrice = price ? formatCurrency(price) : formatCurrency(0);
 
-  // Create slug from name
-  const generateSlug = () => {
-    if (productName) {
+  // Auto-generate slug from product name (used in the useEffect hook)
+  useEffect(() => {
+    if (autoSlug && productName) {
       setValue('slug', slugify(productName));
-      setAutoSlug(true);
     }
-  };
+  }, [autoSlug, productName, setValue]);
 
   // Handle form submission
   const handleFormSubmit = async (data: ProductFormValues) => {
     try {
+      // Get the unit type display value for the selected unit
+      const getUnitTypeDisplay = () => {
+        const unitValue = data.unit_type;
+        switch(unitValue) {
+          case 'kg': return 'Kilogram';
+          case 'gram': return 'Gram';
+          case 'mg': return 'Miligram';
+          case 'liter': return 'Liter';
+          case 'ml': return 'Mililiter';
+          case 'sak': return 'Sak';
+          case 'pak': return 'Pak';
+          case 'box': return 'Box';
+          case 'botol': return 'Botol';
+          case 'pcs': return 'Pieces';
+          case 'karung': return 'Karung';
+          default: return 'Unit';
+        }
+      };
+      
+      // Since unit_type isn't in the database, include it in the product description
+      let enhancedDescription = data.description || '';
+      if (data.unit_type && data.unit_type !== 'unit') {
+        // Only add unit information if it's not the default 'unit'
+        const unitInfo = `Satuan produk: ${getUnitTypeDisplay()} (${data.unit_type})`;
+        enhancedDescription = enhancedDescription 
+          ? `${enhancedDescription}\n\n${unitInfo}` 
+          : unitInfo;
+      }
+
       // Add the slug to the data
       const productData = {
         ...data,
+        description: enhancedDescription,
         slug: autoSlug ? slugify(productName) : product?.slug || slugify(productName),
         images: productImages,
       };

@@ -37,7 +37,7 @@ export const useStoreSettings = (options?: { enabled?: boolean }) => {
           throw error;
         }
 
-        return data as StoreSetting;
+        return data as unknown as StoreSetting;
       } catch (error) {
         console.error('Error in useStoreSettings:', error);
         return null;
@@ -100,9 +100,9 @@ export const useUpdateStoreSettings = () => {
         }
 
         return result as StoreSetting;
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error in useUpdateStoreSettings:', error);
-        if (typeof error === 'object' && error !== null) {
+        if (error instanceof Error) {
           throw new Error(error.message || 'An unknown error occurred');
         } else {
           throw new Error('Failed to update store settings');
@@ -113,7 +113,7 @@ export const useUpdateStoreSettings = () => {
       queryClient.invalidateQueries({ queryKey: [SETTINGS_QUERY_KEY, 'store'] });
       toast.success('Pengaturan toko berhasil disimpan');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal menyimpan pengaturan toko: ${error.message || 'Unknown error'}`);
     },
   });

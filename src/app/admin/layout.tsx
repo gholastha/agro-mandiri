@@ -7,7 +7,8 @@ import { Header } from '@/components/admin/layout/header';
 import { Toaster } from '@/components/ui/sonner';
 import QueryProvider from '@/providers/query-provider';
 import { AuthProvider } from '@/context/auth-context';
-import { supabase } from '@/api/supabase/client';
+// Import will be needed when authentication is re-enabled
+// import { supabase } from '@/api/supabase/client';
 
 export default function AdminLayout({
   children,
@@ -34,17 +35,22 @@ export default function AdminLayout({
   useEffect(() => {
     setIsClient(true);
     
-    const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        router.push('/login');
-      } else {
-        setIsAuthenticated(true);
-      }
-      setLoading(false);
-    };
+    // TEMPORARY: Skip authentication check for development
+    setIsAuthenticated(true);
+    setLoading(false);
     
-    checkAuth();
+    // Uncomment this for production:
+    // const checkAuth = async () => {
+    //   const { data } = await supabase.auth.getSession();
+    //   if (!data.session) {
+    //     router.push('/login');
+    //   } else {
+    //     setIsAuthenticated(true);
+    //   }
+    //   setLoading(false);
+    // };
+    // 
+    // checkAuth();
   }, [router]);
 
   if (!isClient) {

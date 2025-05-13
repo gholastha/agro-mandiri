@@ -50,7 +50,7 @@ export const useContent = (options?: {
           throw error;
         }
 
-        return (data || []) as Content[];
+        return (data || []) as unknown as Content[];
       } catch (error) {
         console.error('Error in useContent:', error);
         return [];
@@ -87,7 +87,7 @@ export const useContentItem = (contentId: string | undefined, options?: { enable
           throw error;
         }
 
-        return data as Content;
+        return data as unknown as Content;
       } catch (error) {
         console.error('Error fetching content details:', error);
         return null;
@@ -127,13 +127,13 @@ export const useCreateContent = () => {
           throw new Error(error.message || 'Failed to create content');
         }
 
-        return data as Content;
-      } catch (error: any) {
+        return data as unknown as Content;
+      } catch (error) {
         console.error('Error in useCreateContent:', error);
-        if (typeof error === 'object' && error !== null) {
+        if (error instanceof Error) {
           throw new Error(error.message || 'An unknown error occurred');
         } else {
-          throw new Error('Failed to create content');
+          throw new Error(`Failed to create content: ${String(error)}`);
         }
       }
     },
@@ -141,7 +141,7 @@ export const useCreateContent = () => {
       queryClient.invalidateQueries({ queryKey: [CONTENT_QUERY_KEY] });
       toast.success('Konten berhasil ditambahkan');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal menambahkan konten: ${error.message || 'Unknown error'}`);
     },
   });
@@ -153,10 +153,11 @@ export const useUpdateContent = (contentId: string) => {
   return useMutation({
     mutationFn: async (values: Partial<ContentFormValues>) => {
       try {
-        // Update published_at if is_published status changes
-        let updateData = { ...values };
+        // Create update data with the values
+        const updateData = { ...values };
         
-        if (values.is_published !== undefined) {
+        // If content is being published, set published_at date
+        if (values.is_published === true) {
           // Get current content to check if publish status changed
           const { data: currentContent } = await supabase
             .from('content')
@@ -165,8 +166,15 @@ export const useUpdateContent = (contentId: string) => {
             .single();
             
           // If published status changed from false to true, update published_at
-          if (values.is_published === true && currentContent?.is_published === false) {
-            updateData.published_at = new Date().toISOString();
+          if (currentContent && currentContent.is_published === false) {
+            // Create a properly typed object that includes published_at
+            const contentWithPublishedAt = {
+              ...updateData,
+              published_at: new Date().toISOString()
+            };
+            
+            // Replace updateData with the properly typed object
+            Object.assign(updateData, contentWithPublishedAt);
           }
         }
         
@@ -183,13 +191,13 @@ export const useUpdateContent = (contentId: string) => {
           throw new Error(error.message || 'Failed to update content');
         }
 
-        return data as Content;
-      } catch (error: any) {
+        return data as unknown as Content;
+      } catch (error) {
         console.error('Error in useUpdateContent:', error);
-        if (typeof error === 'object' && error !== null) {
+        if (error instanceof Error) {
           throw new Error(error.message || 'An unknown error occurred');
         } else {
-          throw new Error('Failed to update content');
+          throw new Error(`Failed to update content: ${String(error)}`);
         }
       }
     },
@@ -198,7 +206,7 @@ export const useUpdateContent = (contentId: string) => {
       queryClient.invalidateQueries({ queryKey: [CONTENT_QUERY_KEY] });
       toast.success('Konten berhasil diperbarui');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal memperbarui konten: ${error.message || 'Unknown error'}`);
     },
   });
@@ -221,12 +229,12 @@ export const useDeleteContent = () => {
         }
 
         return contentId;
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error in useDeleteContent:', error);
-        if (typeof error === 'object' && error !== null) {
+        if (error instanceof Error) {
           throw new Error(error.message || 'An unknown error occurred');
         } else {
-          throw new Error('Failed to delete content');
+          throw new Error(`Failed to delete content: ${String(error)}`);
         }
       }
     },
@@ -234,7 +242,7 @@ export const useDeleteContent = () => {
       queryClient.invalidateQueries({ queryKey: [CONTENT_QUERY_KEY] });
       toast.success('Konten berhasil dihapus');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal menghapus konten: ${error.message || 'Unknown error'}`);
     },
   });

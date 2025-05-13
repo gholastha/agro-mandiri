@@ -44,8 +44,8 @@ export const useCustomers = (options?: {
         }
 
         // Try to get order counts for each customer
-        let customerOrderCounts: Record<string, number> = {};
-        let customerTotalSpent: Record<string, number> = {};
+        const customerOrderCounts: Record<string, number> = {};
+        const customerTotalSpent: Record<string, number> = {};
         
         try {
           const { data: orderData, error: orderError } = await supabase
@@ -183,13 +183,13 @@ export const useUpdateCustomer = (customerId: string) => {
           throw new Error(error.message || 'Failed to update customer');
         }
 
-        return data as Customer;
-      } catch (error: any) {
+        return data as unknown as Customer;
+      } catch (error) {
         console.error('Error in useUpdateCustomer:', error);
-        if (typeof error === 'object' && error !== null) {
+        if (error instanceof Error) {
           throw new Error(error.message || 'An unknown error occurred');
         } else {
-          throw new Error('Failed to update customer');
+          throw new Error(`Failed to update customer: ${String(error)}`);
         }
       }
     },
@@ -198,7 +198,7 @@ export const useUpdateCustomer = (customerId: string) => {
       queryClient.invalidateQueries({ queryKey: [CUSTOMERS_QUERY_KEY] });
       toast.success('Pelanggan berhasil diperbarui');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal memperbarui pelanggan: ${error.message || 'Unknown error'}`);
     },
   });

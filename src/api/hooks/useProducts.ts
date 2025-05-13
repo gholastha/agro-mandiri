@@ -50,7 +50,7 @@ export const useProducts = (options?: {
 
         // Get categories for products if needed (in a separate query)
         const productIds = data.map(product => product.id);
-        let categoryMap = {};
+        let categoryMap: Record<string, { id: string; name: string; slug: string }> = {};
         
         if (productIds.length > 0) {
           try {
@@ -73,6 +73,7 @@ export const useProducts = (options?: {
 
         // Map to expected Product structure
         return (data || []).map(product => ({
+          // Explicitly type each field according to the Product interface
           id: product.id,
           name: product.name,
           description: product.description || '',
@@ -90,9 +91,14 @@ export const useProducts = (options?: {
           created_at: product.created_at,
           updated_at: product.updated_at,
           main_image_url: product.main_image_url || '',
+          // Safely lookup category from the properly typed map
           category: product.category_id ? categoryMap[product.category_id] || null : null,
-          images: []
-        })) as Product[];
+          images: [],
+          // Add these fields to match the Product interface
+          meta_title: product.meta_title || null,
+          meta_description: product.meta_description || null,
+          keywords: product.keywords || null
+        })) as unknown as Product[];
       } catch (error) {
         console.error('Error in useProducts:', error);
         return [];
@@ -164,7 +170,10 @@ export const useProduct = (productId: string | undefined, options?: { enabled?: 
               image_url: img.image_url,
               alt_text: img.alt_text || '',
               display_order: img.display_order || 0,
-              is_primary: img.is_primary || false
+              is_primary: img.is_primary || false,
+              // Add missing fields required by ProductImage interface
+              created_at: img.created_at || new Date().toISOString(),
+              updated_at: img.updated_at || new Date().toISOString() 
             }));
           }
         } catch (err) {
@@ -238,10 +247,10 @@ export const useCreateProduct = () => {
         }
 
         return data as Product;
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error in useCreateProduct:', error);
         // Ensure we always have a meaningful error message
-        if (typeof error === 'object' && error !== null) {
+        if (error instanceof Error) {
           throw new Error(error.message || 'An unknown error occurred');
         } else {
           throw new Error('Failed to create product');
@@ -252,7 +261,7 @@ export const useCreateProduct = () => {
       queryClient.invalidateQueries({ queryKey: [PRODUCTS_QUERY_KEY] });
       toast.success('Produk berhasil ditambahkan');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal menambahkan produk: ${error.message || 'Unknown error'}`);
     },
   });
@@ -264,50 +273,116 @@ export const useUpdateProduct = (productId: string) => {
   return useMutation({
     mutationFn: async (productData: Partial<ProductFormValues>) => {
       try {
-        // Clean the data before sending to Supabase
-        // Remove any fields that shouldn't be sent to the database
-        const cleanedData = { ...productData };
+        console.log('Original product data received:', JSON.stringify(productData));
         
-        // Remove any fields that are not to be stored directly in products table
-        delete cleanedData.images;
-        delete cleanedData.category;
+        // Create a clean object with only the fields that exist in the database table
+        const cleanedData: Record<string, unknown> = {};
         
-        // Convert string "none" back to null for category_id if needed
+        // Define fields that exist in the database (must match exactly with DB column names)
+        // This list should be kept in sync with the actual database schema from database.types.ts
+        const allowedFields = [
+          'name', 'description', 'price', 'sale_price', 'stock_quantity',
+          'is_featured', 'is_active', 'category_id', 'sku', 'weight',
+          'dimensions', 'brand', 'main_image_url', 'slug',
+          'meta_title', 'meta_description', 'keywords'
+        ];
+        
+        // Explicitly remove unit_type since it exists in the form but not in the database
+        // Explicitly remove unit_type since it exists in the form but not in the database
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { unit_type, ...dataWithoutUnitType } = productData;
+        
+        // Copy only the allowed fields, checking for undefined
+        for (const field of allowedFields) {
+          // Only add fields that exist in the input data and are not undefined
+          if (field in dataWithoutUnitType && dataWithoutUnitType[field as keyof typeof dataWithoutUnitType] !== undefined) {
+            cleanedData[field] = dataWithoutUnitType[field as keyof typeof dataWithoutUnitType];
+          }
+        }
+        
+        // Special case handling for certain fields
         if (cleanedData.category_id === "none") {
           cleanedData.category_id = null;
         }
+        
+        // Add slug if it was in the form data but not copied (might be dynamically generated)
+        if (productData.slug && !cleanedData.slug) {
+          cleanedData.slug = productData.slug;
+        }
+        
+        console.log('Updating product:', productId, 'with data:', cleanedData);
+        
+        // First verify the product exists
+        const { data: existingProduct, error: checkError } = await supabase
+          .from('products')
+          .select('id')
+          .eq('id', productId)
+          .maybeSingle();
+        
+        if (checkError) {
+          console.error('Error checking if product exists:', JSON.stringify(checkError));
+          throw new Error(`Failed to verify product exists: ${checkError.message}`);
+        }
+        
+        if (!existingProduct) {
+          console.error('Product not found with ID:', productId);
+          throw new Error(`Product with ID ${productId} not found`);
+        }
+        
+        // Log the final data being sent to the database
+        console.log('FINAL data being sent to database:', JSON.stringify(cleanedData));
         
         // Update the product details
         const { data, error } = await supabase
           .from('products')
           .update(cleanedData)
           .eq('id', productId)
-          .select()
-          .single();
+          .select('*');
+
+        // Log the response to verify what's being returned
+        console.log('Update response from database:', JSON.stringify(data));
 
         if (error) {
-          console.error('Error updating product:', error);
-          throw new Error(error.message || 'Failed to update product');
+          console.error('Error updating product:', JSON.stringify(error));
+          throw new Error(`Failed to update product: ${error.message || JSON.stringify(error)}`);
         }
 
         return data as Product;
-      } catch (error: any) {
-        console.error('Error in useUpdateProduct:', error);
+      } catch (error) {
+        console.error('Error in useUpdateProduct:', error instanceof Error ? error.message : String(error));
         // Ensure we always have a meaningful error message
-        if (typeof error === 'object' && error !== null) {
-          throw new Error(error.message || 'An unknown error occurred');
+        if (error instanceof Error) {
+          throw new Error(`Error updating product: ${error.message}`);
         } else {
-          throw new Error('Failed to update product');
+          throw new Error(`Error updating product: ${String(error) || 'Unknown error'}`);
         }
       }
     },
-    onSuccess: () => {
+    onSuccess: (updatedProduct) => {
+      console.log('Update succeeded, updating cache with:', updatedProduct);
+      
+      // Force refetch data by invalidating both the specific product and the products list
       queryClient.invalidateQueries({ queryKey: [PRODUCTS_QUERY_KEY, productId] });
       queryClient.invalidateQueries({ queryKey: [PRODUCTS_QUERY_KEY] });
+      
+      // Also directly update the cache for immediate UI update
+      queryClient.setQueryData([PRODUCTS_QUERY_KEY, productId], updatedProduct);
+      
+      // Update the product in the list cache if it exists
+      const productsCache = queryClient.getQueryData([PRODUCTS_QUERY_KEY]);
+      if (productsCache && Array.isArray(productsCache)) {
+        const updatedProducts = productsCache.map(product => 
+          product.id === productId ? updatedProduct : product
+        );
+        queryClient.setQueryData([PRODUCTS_QUERY_KEY], updatedProducts);
+      }
+      
       toast.success('Produk berhasil diperbarui');
     },
-    onError: (error: any) => {
-      toast.error(`Gagal memperbarui produk: ${error.message || 'Unknown error'}`);
+    onError: (error: Error) => {
+      const errorMessage = error?.message || 'Unknown error';
+      console.error('Product update error:', errorMessage);
+      toast.error(`Gagal memperbarui produk: ${errorMessage}`);
     },
   });
 };
@@ -358,13 +433,13 @@ export const useDeleteProduct = () => {
         }
 
         return productId;
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error in useDeleteProduct:', error);
         // Ensure we always have a meaningful error message
-        if (typeof error === 'object' && error !== null) {
-          throw new Error(error.message || 'An unknown error occurred');
+        if (error instanceof Error) {
+          throw new Error(error.message);
         } else {
-          throw new Error('Failed to delete product');
+          throw new Error(`Failed to delete product: ${String(error)}`);
         }
       }
     },
@@ -372,7 +447,7 @@ export const useDeleteProduct = () => {
       queryClient.invalidateQueries({ queryKey: [PRODUCTS_QUERY_KEY] });
       toast.success('Produk berhasil dihapus');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal menghapus produk: ${error.message || 'Unknown error'}`);
     },
   });

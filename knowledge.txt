@@ -1,0 +1,240 @@
+{
+  "title": "Arsitektur & Teknologi Inti",
+  "priority": "1",
+  "components": [
+    {
+      "name": "Frontend Stack",
+      "specifications": [
+        "React sebagai framework utama",
+        "Tailwind CSS untuk styling dengan utility-first approach",
+        "Shadcn UI untuk komponen UI yang konsisten",
+        "Zustand/Redux untuk state management",
+        "React Hook Form + Zod untuk validasi form"
+      ]
+    },
+    {
+      "name": "Backend & Database",
+      "specifications": [
+        "Supabase sebagai backend-as-a-service",
+        "PostgreSQL untuk database relasional",
+        "Supabase Auth untuk sistem autentikasi",
+        "Supabase Storage untuk penyimpanan aset",
+        "Supabase Realtime untuk update data real-time"
+      ]
+    },
+    {
+      "name": "Schema Database",
+      "tables": [
+        "products (id, name, slug, description, price, stock, category_id, attributes)",
+        "categories (id, name, slug, parent_id, image_url)",
+        "orders (id, user_id, status, total, payment_status, shipping_info, created_at)",
+        "order_items (id, order_id, product_id, quantity, price)",
+        "users (id, phone, email, name, address, created_at)"
+      ]
+    }
+  ]
+}
+
+---
+
+{
+  "title": "Komponen Admin Dashboard",
+  "priority": "2",
+  "dependencies": ["Arsitektur & Teknologi Inti"],
+  "modules": [
+    {
+      "name": "Dashboard Layout",
+      "components": [
+        "Sidebar dengan navigasi terstruktur",
+        "Header dengan search, notifications, dan user profile",
+        "Main content area dengan responsive grid layout",
+        "Footer dengan informasi versi dan copyright"
+      ]
+    },
+    {
+      "name": "Produk Management",
+      "features": [
+        "Form CRUD produk dengan validasi komprehensif",
+        "Uploader gambar dengan preview dan crop functionality",
+        "Manajemen variasi produk (ukuran, kemasan, harga satuan/grosir)",
+        "Bulk actions: update harga, status, kategori",
+        "Filter dan pencarian produk"
+      ],
+      "implementation": {
+        "data_structure": "JSON dengan nested attributes untuk variasi produk",
+        "validation": "Zod schema untuk validasi data produk",
+        "storage": "Supabase Storage untuk gambar dengan path /products/{id}"
+      }
+    },
+    {
+      "name": "Inventaris Management",
+      "features": [
+        "Dashboard stok dengan filter dan sorting",
+        "Form update stok individual dan massal",
+        "Konfigurasi notifikasi stok rendah",
+        "Log perubahan inventaris",
+        "Ekspor data inventaris ke Excel/CSV"
+      ]
+    }
+  ]
+}
+
+---
+
+{
+  "title": "Autentikasi & Transaksi",
+  "priority": "3",
+  "dependencies": ["Arsitektur & Teknologi Inti"],
+  "auth_system": {
+    "providers": [
+      {
+        "name": "Phone Authentication",
+        "implementation": {
+          "provider": "Supabase Auth with OTP",
+          "flow": ["Input phone number", "Receive OTP", "Verify OTP"],
+          "code_example": "const { data, error } = await supabase.auth.signInWithOtp({ phone: '+628123456789', options: { shouldCreateUser: true } })"
+        }
+      },
+      {
+        "name": "Google Authentication",
+        "implementation": {
+          "provider": "Supabase Auth with OAuth",
+          "code_example": "const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' })"
+        }
+      },
+      {
+        "name": "Facebook Authentication",
+        "implementation": {
+          "provider": "Supabase Auth with OAuth",
+          "code_example": "const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'facebook' })"
+        }
+      }
+    ]
+  },
+  "transaction_flow": {
+    "stages": [
+      {
+        "name": "Cart Management",
+        "features": ["Add to cart", "Update quantity", "Remove item", "Calculate subtotal", "Save cart to local storage"]
+      },
+      {
+        "name": "Checkout Process",
+        "steps": ["Review cart", "Enter shipping details", "Select payment method", "Order confirmation"],
+        "implementations": {
+          "shipping_calculator": "Integration with RajaOngkir API",
+          "payment_gateway": "Midtrans integration with multiple payment options"
+        }
+      },
+      {
+        "name": "Order Management",
+        "statuses": ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
+        "features": ["Status updates", "Customer notifications", "Order history", "Invoice generation"]
+      }
+    ]
+  }
+}
+
+---
+
+{
+  "title": "Manajemen Konten & SEO",
+  "priority": "4",
+  "dependencies": ["Arsitektur & Teknologi Inti"],
+  "components": [
+    {
+      "name": "Mega Menu Editor",
+      "features": [
+        "Drag-and-drop interface untuk struktur menu",
+        "Konfigurasi kategori dan subkategori",
+        "Preview real-time perubahan",
+        "Penyimpanan konfigurasi di Supabase"
+      ],
+      "implementation": {
+        "data_structure": "JSON tree untuk hierarchy menu",
+        "ui_components": "React DnD untuk drag-drop functionality"
+      }
+    },
+    {
+      "name": "Content Management System",
+      "features": [
+        "Editor WYSIWYG untuk artikel edukasi",
+        "Manajemen tag dan kategori artikel",
+        "Scheduling publikasi konten",
+        "Media library untuk gambar dan dokumen"
+      ],
+      "content_types": [
+        "Artikel edukasi agroteknologi",
+        "Panduan penggunaan produk",
+        "FAQ pertanian",
+        "Berita dan event pertanian"
+      ]
+    },
+    {
+      "name": "SEO Tools",
+      "features": [
+        "Meta tags editor per halaman",
+        "Custom URL slugs",
+        "Auto-generated sitemap",
+        "Schema markup generator untuk produk pertanian",
+        "SEO preview (Google SERP simulation)"
+      ]
+    }
+  ]
+}
+
+---
+
+{
+  "title": "Analitik & Fitur Lanjutan",
+  "priority": "5",
+  "dependencies": ["Arsitektur & Teknologi Inti", "Komponen Admin Dashboard", "Autentikasi & Transaksi"],
+  "analytics_dashboard": {
+    "metrics": [
+      {
+        "name": "Sales Metrics",
+        "kpis": ["Daily/Weekly/Monthly Sales", "Average Order Value", "Conversion Rate", "Revenue by Category"]
+      },
+      {
+        "name": "Product Metrics",
+        "kpis": ["Top Sellers", "Slow Moving Items", "Stock Turnover Rate", "Profit Margin by Product"]
+      },
+      {
+        "name": "Customer Metrics",
+        "kpis": ["Customer Acquisition Cost", "Customer Lifetime Value", "Repeat Purchase Rate", "Regional Distribution"]
+      }
+    ],
+    "visualization": {
+      "charts": ["Line Charts", "Bar Charts", "Pie Charts", "Heat Maps"],
+      "implementation": "Chart.js dengan custom theming",
+      "features": ["Time period filtering", "Data export", "Drill-down capability"]
+    }
+  },
+  "advanced_features": [
+    {
+      "name": "Recommendation Engine",
+      "implementation": {
+        "algorithm": "Collaborative Filtering + Agricultural Season Awareness",
+        "data_points": ["Purchase history", "Product compatibility", "Seasonal requirements"]
+      }
+    },
+    {
+      "name": "External Integrations",
+      "services": [
+        "Email Marketing (Mailchimp integration)",
+        "WhatsApp Business API",
+        "Google Analytics"
+      ]
+    },
+    {
+      "name": "Progressive Web App",
+      "features": [
+        "Offline functionality",
+        "Push notifications",
+        "Home screen installation"
+      ]
+    }
+  ]
+}
+
+---
+

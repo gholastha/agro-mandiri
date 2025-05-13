@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase/client';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, Provider } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
 export const useAuth = () => {
@@ -62,6 +62,80 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Unexpected error during sign in:', error);
       toast.error('Terjadi kesalahan saat login. Silakan coba lagi.');
+      return { error };
+    }
+  };
+
+  const signInWithOAuth = async (provider: Provider) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/confirm`,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return { error };
+      }
+
+      return { data };
+    } catch (error) {
+      console.error(`Unexpected error during ${provider} sign in:`, error);
+      toast.error(`Terjadi kesalahan saat login dengan ${provider}. Silakan coba lagi.`);
+      return { error };
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    return signInWithOAuth('google');
+  };
+
+  const signInWithFacebook = async () => {
+    return signInWithOAuth('facebook');
+  };
+
+  const signInWithPhone = async (phone: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOtp({
+        phone,
+        options: {
+          shouldCreateUser: true,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return { error };
+      }
+
+      toast.success('Kode OTP telah dikirim ke nomor telepon Anda');
+      return { data };
+    } catch (error) {
+      console.error('Unexpected error during phone sign in:', error);
+      toast.error('Terjadi kesalahan saat mengirim OTP. Silakan coba lagi.');
+      return { error };
+    }
+  };
+
+  const verifyOtp = async (phone: string, token: string) => {
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone,
+        token,
+        type: 'sms',
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return { error };
+      }
+
+      return { data };
+    } catch (error) {
+      console.error('Unexpected error during OTP verification:', error);
+      toast.error('Terjadi kesalahan saat verifikasi OTP. Silakan coba lagi.');
       return { error };
     }
   };
@@ -148,6 +222,10 @@ export const useAuth = () => {
     session,
     loading,
     signIn,
+    signInWithGoogle,
+    signInWithFacebook,
+    signInWithPhone,
+    verifyOtp,
     signUp,
     signOut,
     resetPassword,

@@ -49,14 +49,18 @@ export const useCategories = (options?: { active?: boolean; parentId?: string | 
         return (data || []).map(category => ({
           id: category.id,
           name: category.name,
-          description: category.description || '',
+          description: category.description || null,
           slug: category.slug,
-          image_url: category.image_url || '',
+          image_url: category.image_url || null,
           parent_id: category.parent_id,
+          is_active: category.is_active !== undefined ? category.is_active : true,
+          display_order: category.display_order || 0,
+          meta_title: category.meta_title || null,
+          meta_description: category.meta_description || null,
           created_at: category.created_at,
           updated_at: category.updated_at,
           children: [] // Initialize with empty children array
-        })) as Category[];
+        })) as unknown as Category[];
       } catch (error) {
         console.error('Error fetching categories:', error);
         return []; // Return empty array instead of throwing
@@ -95,17 +99,32 @@ export const useCategory = (categoryId: string | undefined, options?: { enabled?
         }
 
         // Get parent category if needed
-        let parentCategory = null;
+        let parentCategory: Category | null = null;
         if (data.parent_id) {
           try {
             const { data: parentData, error: parentError } = await supabase
               .from('categories')
-              .select('id, name, slug')
+              .select('*') // Get all fields
               .eq('id', data.parent_id)
               .single();
             
             if (!parentError && parentData) {
-              parentCategory = parentData;
+              // Map to full Category interface
+              parentCategory = {
+                id: parentData.id,
+                name: parentData.name,
+                description: parentData.description || null,
+                slug: parentData.slug,
+                image_url: parentData.image_url || null,
+                parent_id: parentData.parent_id,
+                is_active: parentData.is_active !== undefined ? parentData.is_active : true,
+                display_order: parentData.display_order || 0,
+                meta_title: parentData.meta_title || null,
+                meta_description: parentData.meta_description || null,
+                created_at: parentData.created_at,
+                updated_at: parentData.updated_at
+                // No need to include children or parent here
+              };
             }
           } catch (err) {
             console.log('Parent category could not be fetched:', err);
@@ -117,10 +136,14 @@ export const useCategory = (categoryId: string | undefined, options?: { enabled?
         return {
           id: data.id,
           name: data.name,
-          description: data.description || '',
+          description: data.description || null,
           slug: data.slug,
-          image_url: data.image_url || '',
+          image_url: data.image_url || null,
           parent_id: data.parent_id,
+          is_active: data.is_active !== undefined ? data.is_active : true,
+          display_order: data.display_order || 0,
+          meta_title: data.meta_title || null,
+          meta_description: data.meta_description || null,
           created_at: data.created_at,
           updated_at: data.updated_at,
           parent: parentCategory,
@@ -163,14 +186,18 @@ export const useCategoryTree = (options?: { enabled?: boolean }) => {
         const categories = (data || []).map(category => ({
           id: category.id,
           name: category.name,
-          description: category.description || '',
+          description: category.description || null,
           slug: category.slug,
-          image_url: category.image_url || '',
+          image_url: category.image_url || null,
           parent_id: category.parent_id,
+          is_active: category.is_active !== undefined ? category.is_active : true,
+          display_order: category.display_order || 0,
+          meta_title: category.meta_title || null,
+          meta_description: category.meta_description || null,
           created_at: category.created_at,
           updated_at: category.updated_at,
           children: []
-        })) as Category[];
+        })) as unknown as Category[];
         
         const categoryMap = new Map<string, Category>();
         const rootCategories: Category[] = [];
@@ -246,7 +273,7 @@ export const useCreateCategory = () => {
       queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
       toast.success('Kategori berhasil dibuat');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal membuat kategori: ${error.message}`);
     },
   });
@@ -287,7 +314,7 @@ export const useUpdateCategory = (categoryId: string) => {
       queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
       toast.success('Kategori berhasil diperbarui');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal memperbarui kategori: ${error.message}`);
     },
   });
@@ -319,7 +346,7 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
       toast.success('Kategori berhasil dihapus');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Gagal menghapus kategori: ${error.message}`);
     },
   });

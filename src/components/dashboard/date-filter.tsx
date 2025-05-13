@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from 'lucide-react';
-import { subDays } from 'date-fns';
+import subDays from 'date-fns/subDays';
 
 type DateRange = {
   from: Date;
