@@ -9,6 +9,9 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ProductImage } from '@/api/types/models';
 
+// Import the CSS styles
+import './image-uploader.css';
+
 interface ImageUploaderProps {
   productId?: string;
   images: ProductImage[];
@@ -341,10 +344,13 @@ export function ImageUploader({ productId, images, onImagesChange }: ImageUpload
                     <span className="text-sm truncate max-w-[180px]" title={file.name}>{file.name}</span>
                     <span className="text-xs text-muted-foreground">{file.progress}%</span>
                   </div>
-                  <div className="w-full bg-muted h-1 rounded-full mt-1">
+                  <div className="upload-progress-container">
                     <div 
-                      className={`h-full rounded-full ${file.status === 'error' ? 'bg-red-500' : 'bg-green-500'}`}
-                      style={{width: `${file.progress}%`}} /* This dynamic width needs to be inline as it changes per file */
+                      className={`upload-progress-bar ${file.status === 'error' ? 'upload-progress-bar-error' : 'upload-progress-bar-success'} progress-${Math.floor(file.progress / 10) * 10}`}
+                      role="progressbar"
+                      data-progress={file.progress.toString()}
+                      data-filename={file.name}
+                      aria-label={`${file.name} upload progress: ${file.progress}%`}
                     />
                   </div>
                   {file.error && <p className="text-xs text-red-500 mt-1">{file.error}</p>}

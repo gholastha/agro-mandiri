@@ -6,6 +6,7 @@ import { useProducts } from '@/api/hooks/useProducts';
 import { useCategories } from '@/api/hooks/useCategories';
 import { toast } from 'sonner';
 import { Product } from '@/api/types/models';
+import { useProductPreferences, ViewMode } from '@/store/product-preferences';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-// Badge will be used by child components
 
 import {
   Search,
@@ -28,97 +28,112 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 
-// Import new components
+// Import components
 import { BulkImportDialog } from '@/components/admin/products/bulk-import-dialog';
 import { BulkDeleteDialog } from '@/components/admin/products/bulk-delete-dialog';
-import { ProductViewSwitch, ViewMode } from '@/components/admin/products/product-view-switch';
+import { ProductViewSwitch } from '@/components/admin/products/product-view-switch';
 import { ProductGrid } from '@/components/admin/products/product-grid';
 import { ProductList } from '@/components/admin/products/product-list';
 import { PageBreadcrumbs } from '@/components/admin/layout/breadcrumbs';
-import { Pagination, PaginationSummary } from '@/components/ui/pagination';
+import { PaginationSummary } from '@/components/ui/pagination';
 
 export default function ProductsPage() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [sortField, setSortField] = useState('name');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  
+  // Use Zustand store for persistent user preferences
+  const { 
+    viewMode,
+    sortField, 
+    sortDirection, 
+    searchQuery,
+    categoryFilter,
+    setViewMode,
+    setSorting,
+    setFilter,
+    resetFilters
+  } = useProductPreferences();
+  
+  // Product data hooks
+  const { data: products = [], isLoading, error, refetch } = useProducts();
+  const { data: categories = [] } = useCategories();
+  
+  // Local UI state
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12; // Default items per page
-
-  const { data: products, isLoading: productsLoading, error: productsError, refetch } = useProducts();
-  const { data: categories } = useCategories();
-
-  // Sorting is handled by sort state (sortField and sortDirection)
-  // Currently used directly by the filtered products logic below
-  // If we need a UI handler in the future, we would implement:
-  /*
-  const handleSortChange = (field: string) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-  */
-
-  // Filter and sort products
-  const filteredProducts = useMemo(() => {
-    return products
-      ? products
-          .filter((product) => {
-            const matchesSearch = searchQuery
-              ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (product.description || '').toLowerCase().includes(searchQuery.toLowerCase())
-              : true;
-
-            const matchesCategory =
-              categoryFilter === 'all' || product.category_id === categoryFilter;
-
-            return matchesSearch && matchesCategory;
-          })
-          .sort((a, b) => {
-            let comparison = 0;
-
-            if (sortField === 'name') {
-              comparison = a.name.localeCompare(b.name);
-            } else if (sortField === 'price') {
-              comparison = a.price - b.price;
-            } else if (sortField === 'stock') {
-              comparison = a.stock_quantity - b.stock_quantity;
-            }
-
-            return sortDirection === 'desc' ? comparison * -1 : comparison;
-          })
-      : [];
-  }, [products, searchQuery, categoryFilter, sortField, sortDirection]);
-
-  // Reset to first page when filters change
+  const [searchInputValue, setSearchInputValue] = useState(searchQuery || '');
+  const itemsPerPage = 12;
+  
+  // Update search input value when store changes
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, categoryFilter, sortField, sortDirection]);
-
+    setSearchInputValue(searchQuery || '');
+  }, [searchQuery]);
   
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  // Handle search submission
+  const handleSearchSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    setFilter({ query: searchInputValue });
+  }, [setFilter, searchInputValue]);
   
-  // Get paginated products
+  // Handle search input change
+  const handleSearchInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInputValue(e.target.value);
+  }, []);
+  
+  // Filter products based on search query and category filter
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      // Match category filter if specified
+      const categoryMatch = 
+        !categoryFilter || 
+        categoryFilter === 'all' || 
+        product.category_id === categoryFilter;
+      
+      // Match search query if present
+      const searchMatch = 
+        !searchQuery || 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      return categoryMatch && searchMatch;
+    });
+  }, [products, searchQuery, categoryFilter]);
+  
+  // Apply sorting to filtered products
+  const sortedProducts = useMemo(() => {
+    return [...filteredProducts].sort((a, b) => {
+      let comparison = 0;
+      
+      if (sortField === 'name') {
+        comparison = a.name.localeCompare(b.name);
+      } else if (sortField === 'price') {
+        comparison = (a.price || 0) - (b.price || 0);
+      } else if (sortField === 'stock') {
+        comparison = (a.stock_quantity || 0) - (b.stock_quantity || 0);
+      }
+      
+      return sortDirection === 'desc' ? -comparison : comparison;
+    });
+  }, [filteredProducts, sortField, sortDirection]);
+  
+  // Get current page products
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredProducts.slice(startIndex, endIndex);
-  }, [filteredProducts, currentPage, itemsPerPage]);
+    return sortedProducts.slice(startIndex, endIndex);
+  }, [sortedProducts, currentPage, itemsPerPage]);
+  
+  // Calculate pagination info
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  
+  // Reset to first page when filters or sorting change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, categoryFilter, sortField, sortDirection]);
   
   // Handle page change
   const handlePageChange = useCallback((page: number) => {
@@ -134,39 +149,59 @@ export default function ProductsPage() {
     }
   }, [isSelectionMode]);
   
-  // Handle product selection for bulk operations
-  const handleSelectProduct = (product: Product, isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedProducts([...selectedProducts, product]);
-    } else {
-      setSelectedProducts(selectedProducts.filter(p => p.id !== product.id));
-    }
-  };
-
+  // Handle product selection
+  const handleSelectProduct = useCallback((product: Product, isSelected: boolean) => {
+    setSelectedProducts(prev => {
+      if (isSelected) {
+        return [...prev, product];
+      } else {
+        return prev.filter(p => p.id !== product.id);
+      }
+    });
+  }, []);
+  
   // Handle select all products
-  const handleSelectAll = (isSelected: boolean) => {
+  const handleSelectAll = useCallback((isSelected: boolean) => {
     if (isSelected) {
       setSelectedProducts(filteredProducts);
     } else {
       setSelectedProducts([]);
     }
-  };
-
-  // Refresh products after bulk operations
-  const handleBulkOperationSuccess = () => {
+  }, [filteredProducts]);
+  
+  // After bulk operations success
+  const handleBulkOperationSuccess = useCallback(() => {
     setSelectedProducts([]);
-    setIsSelectionMode(false); // Exit selection mode after operation
+    setIsSelectionMode(false);
     refetch();
-  };
-
-  // Handle errors
-  if (productsError) {
+  }, [refetch]);
+  
+  // Handle sort change
+  const handleSortChange = useCallback((field: string) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSorting({ 
+        field, 
+        direction: sortDirection === 'asc' ? 'desc' : 'asc' 
+      });
+    } else {
+      // New field, default to ascending
+      setSorting({ field, direction: 'asc' });
+    }
+  }, [sortField, sortDirection, setSorting]);
+  
+  // Handle category filter change
+  const handleCategoryChange = useCallback((value: string) => {
+    setFilter({ category: value === 'all' ? null : value });
+  }, [setFilter]);
+  
+  // UI elements
+  if (error) {
     toast.error('Gagal memuat produk. Silakan coba lagi.');
   }
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumbs */}
       <PageBreadcrumbs />
       
       <div className="flex items-center justify-between">
@@ -189,34 +224,41 @@ export default function ProductsPage() {
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-            <div className="relative w-full max-w-sm">
+            <form 
+              className="relative w-full max-w-sm"
+              onSubmit={handleSearchSubmit}
+            >
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
+                name="search"
                 placeholder="Cari produk..."
                 className="pl-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInputValue}
+                onChange={handleSearchInputChange}
               />
-            </div>
+            </form>
             <div className="flex items-center gap-3">
               <Select
-                value={categoryFilter}
-                onValueChange={setCategoryFilter}
+                value={categoryFilter || 'all'}
+                onValueChange={handleCategoryChange}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Kategori" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Semua Kategori</SelectItem>
-                  {categories?.map((category) => (
+                  {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <ProductViewSwitch viewMode={viewMode} onChange={setViewMode} />
+              <ProductViewSwitch 
+                value={viewMode} 
+                onChange={setViewMode} 
+              />
             </div>
           </div>
 
@@ -270,7 +312,7 @@ export default function ProductsPage() {
             </div>
           </div>
 
-          {productsLoading ? (
+          {isLoading ? (
             <div className="flex h-60 items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
@@ -301,31 +343,36 @@ export default function ProductsPage() {
               sortField={sortField}
               sortDirection={sortDirection}
               selectionMode={isSelectionMode}
-              onSortChange={(field) => {
-                if (sortField === field) {
-                  setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-                } else {
-                  setSortField(field);
-                  setSortDirection('asc');
-                }
-                setCurrentPage(1); // Reset to first page on sort change
-              }}
+              onSortChange={handleSortChange}
             />
+          )}
+          
+          {filteredProducts.length > 0 && (
+            <div className="mt-4 flex justify-center">
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           )}
         </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="text-sm text-muted-foreground">
-            Menampilkan {filteredProducts.length} dari {products?.length || 0} produk
-          </div>
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              className="mt-2 sm:mt-0"
-            />
-          )}
-        </CardFooter>
       </Card>
     </div>
   );
