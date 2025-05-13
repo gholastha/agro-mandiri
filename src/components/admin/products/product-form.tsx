@@ -54,8 +54,6 @@ const productSchema = z.object({
   weight: z.coerce.number().nullable(),
   dimensions: z.string().nullable(),
   brand: z.string().nullable(),
-  meta_title: z.string().nullable(),
-  meta_description: z.string().nullable(),
   keywords: z.string().nullable(),
 });
 
@@ -89,8 +87,6 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
       weight: product?.weight || null,
       dimensions: product?.dimensions || null,
       brand: product?.brand || null,
-      meta_title: product?.meta_title || null,
-      meta_description: product?.meta_description || null,
       keywords: product?.keywords || null,
     }
   });
@@ -149,11 +145,19 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
           : unitInfo;
       }
 
-      // Add the slug to the data
+      // Set the first image as main_image_url if available
+      let main_image_url = null;
+      if (productImages.length > 0) {
+        const primaryImage = productImages.find(img => img.is_primary);
+        main_image_url = primaryImage?.image_url || productImages[0]?.image_url;
+      }
+
+      // Add the slug and images to the data
       const productData = {
         ...data,
         description: enhancedDescription,
         slug: autoSlug ? slugify(productName) : product?.slug || slugify(productName),
+        main_image_url,
         images: productImages,
       };
       
@@ -405,20 +409,11 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {product?.id ? (
-                  <ImageUploader
-                    productId={product.id}
-                    images={productImages}
-                    onImagesChange={setProductImages}
-                  />
-                ) : (
-                  <div className="flex h-40 flex-col items-center justify-center rounded-md border border-dashed p-4">
-                    <Upload className="h-8 w-8 text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Simpan produk terlebih dahulu untuk dapat mengunggah gambar
-                    </p>
-                  </div>
-                )}
+                <ImageUploader
+                  productId={product?.id}
+                  images={productImages}
+                  onImagesChange={setProductImages}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -433,23 +428,7 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="meta_title">Judul Meta (SEO Title)</Label>
-                  <Input
-                    id="meta_title"
-                    placeholder="Judul untuk mesin pencari"
-                    {...register('meta_title')}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="meta_description">Deskripsi Meta</Label>
-                  <Textarea
-                    id="meta_description"
-                    placeholder="Deskripsi singkat untuk mesin pencari"
-                    rows={3}
-                    {...register('meta_description')}
-                  />
-                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="keywords">Kata Kunci (dipisahkan dengan koma)</Label>
                   <Input

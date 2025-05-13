@@ -168,23 +168,23 @@ export default function InsightContent() {
                   <ol className="list-decimal pl-5 space-y-2">
                     <li>
                       <p className="font-semibold">Buat konten insight baru</p>
-                      <p className="text-sm">Buka "Admin" ➔ "Konten" ➔ klik tombol "Tambah Konten".</p>
+                      <p className="text-sm">Buka &quot;Admin&quot; ➔ &quot;Konten&quot; ➔ klik tombol &quot;Tambah Konten&quot;.</p>
                     </li>
                     <li>
                       <p className="font-semibold">Atur sebagai insight pertanian</p>
-                      <p className="text-sm">Pada tab "Informasi Dasar", centang "Artikel ini berkaitan dengan wawasan pertanian" dan pilih kategori produk yang relevan.</p>
+                      <p className="text-sm">Pada tab &quot;Informasi Dasar&quot;, centang &quot;Artikel ini berkaitan dengan wawasan pertanian&quot; dan pilih kategori produk yang relevan.</p>
                     </li>
                     <li>
                       <p className="font-semibold">Tulis konten berkualitas</p>
-                      <p className="text-sm">Pada tab "Konten", gunakan editor untuk menulis artikel dengan pengetahuan terkini dan berguna.</p>
+                      <p className="text-sm">Pada tab &quot;Konten&quot;, gunakan editor untuk menulis artikel dengan pengetahuan terkini dan berguna.</p>
                     </li>
                     <li>
                       <p className="font-semibold">Optimasi SEO</p>
-                      <p className="text-sm">Pada tab "SEO", masukkan meta title dan meta description untuk meningkatkan visibilitas di mesin pencari.</p>
+                      <p className="text-sm">Pada tab &quot;SEO&quot;, masukkan meta title dan meta description untuk meningkatkan visibilitas di mesin pencari.</p>
                     </li>
                     <li>
                       <p className="font-semibold">Publikasikan dan tinjau</p>
-                      <p className="text-sm">Centang "Publikasikan Sekarang" untuk membuat artikel langsung tersedia atau biarkan tidak dicentang untuk menyimpan sebagai draft.</p>
+                      <p className="text-sm">Centang &quot;Publikasikan Sekarang&quot; untuk membuat artikel langsung tersedia atau biarkan tidak dicentang untuk menyimpan sebagai draft.</p>
                     </li>
                   </ol>
                 </CardContent>
@@ -295,26 +295,6 @@ export default function InsightContent() {
                     <CardTitle className="text-lg">Masalah Update Produk</CardTitle>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="mb-2">Error update produk disebabkan oleh ketidakcocokan nama kolom di database dengan yang direferensikan oleh kode.</p>
-                  <div className="bg-red-50 border border-red-200 rounded p-3 mb-3 text-sm font-mono text-red-700">
-                    Error: &quot;Cannot find column &apos;keyword&apos; from &apos;product&apos; in schema cache&quot;
-                  </div>
-                  
-                  <h4 className="font-semibold mb-2">Solusi:</h4>
-                  <ol className="list-decimal pl-5 space-y-1 text-sm">
-                    <li>Ubah referensi kode dari <code className="px-1 py-0.5 bg-gray-100 rounded">keyword</code> (tunggal) menjadi <code className="px-1 py-0.5 bg-gray-100 rounded">keywords</code> (jamak) di:</li>
-                    <ul className="list-disc pl-5 mt-1 mb-2 text-sm">
-                      <li><code className="px-1 py-0.5 bg-gray-100 rounded">src/api/hooks/useProducts.ts</code></li>
-                      <li><code className="px-1 py-0.5 bg-gray-100 rounded">src/api/types/models.ts</code></li>
-                      <li>Form handling untuk produk</li>
-                    </ul>
-                    <li>Sebagai alternatif, ubah kolom di database dari <code className="px-1 py-0.5 bg-gray-100 rounded">keywords</code> menjadi <code className="px-1 py-0.5 bg-gray-100 rounded">keyword</code> menggunakan SQL:</li>
-                    <div className="bg-gray-100 p-2 mt-1 mb-2 text-sm font-mono rounded">
-                      ALTER TABLE products RENAME COLUMN keywords TO keyword;
-                    </div>
-                  </ol>
-                </CardContent>
               </Card>
               
               <Card className="border-l-4 border-l-orange-500">

@@ -54,13 +54,19 @@ export function ProductGrid({ products, selectedProducts, onSelectProduct, selec
               </div>
             )}
             <Image
-              src={product.images && product.images.length > 0 
-                ? product.images.find(img => img.is_primary)?.image_url || '/product-placeholder.png'
-                : '/product-placeholder.png'}
+              src={
+                // First check for main_image_url
+                product.main_image_url ||
+                // Then look for a primary image in the images array
+                (product.images && product.images.length > 0
+                  ? product.images.find(img => img.is_primary)?.image_url || product.images[0].image_url
+                  : '/product-placeholder.png')
+              }
               alt={product.name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover"
+              className="object-cover object-center"
+              priority={true} /* Prioritize loading for better user experience */
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = '/product-placeholder.png';
@@ -83,7 +89,7 @@ export function ProductGrid({ products, selectedProducts, onSelectProduct, selec
               <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                 <Package className="h-3 w-3" />
                 <span>
-                  {product.stock_quantity} {product.unit_type}
+                  {product.stock_quantity} {product.unit_type || 'unit'}
                 </span>
               </div>
             </div>

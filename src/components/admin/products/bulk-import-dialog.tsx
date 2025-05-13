@@ -118,9 +118,6 @@ export function BulkImportDialog() {
       weight: product.weight ? parseFloat(product.weight) : null,
       dimensions: product.dimensions || null,
       brand: product.brand || null,
-      meta_title: product.meta_title || null,
-      meta_description: product.meta_description || null,
-      keywords: product.keywords || null,
     };
   };
 

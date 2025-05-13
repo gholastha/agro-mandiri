@@ -218,6 +218,19 @@ export const useCreateProduct = () => {
         if (values.category_id === "none") {
           values.category_id = null;
         }
+        
+        // Check for primary image to set as main_image_url
+        let main_image_url = values.main_image_url || null;
+        if (values.images && values.images.length > 0) {
+          // Find primary image if available
+          const primaryImage = values.images.find(img => img.is_primary);
+          if (primaryImage) {
+            main_image_url = primaryImage.image_url;
+          } else if (values.images[0]) {
+            // Use first image if no primary image is set
+            main_image_url = values.images[0].image_url;
+          }
+        }
 
         // Create the product record
         const { data, error } = await supabase
@@ -236,7 +249,7 @@ export const useCreateProduct = () => {
             weight: values.weight || null,
             dimensions: values.dimensions || null,
             brand: values.brand || null,
-            main_image_url: values.main_image_url || null
+            main_image_url: main_image_url
           })
           .select()
           .single();
@@ -244,6 +257,58 @@ export const useCreateProduct = () => {
         if (error) {
           console.error('Error creating product:', error);
           throw new Error(error.message || 'Failed to create product');
+        }
+        
+        // Handle image uploads if any images were added during product creation
+        if (values.images && values.images.length > 0 && data) {
+          // Process each image
+          for (const image of values.images) {
+            // Move image from temp folder to product folder if it's a temporary upload
+            if (image.local_only && image.image_url.includes('temp')) {
+              // Extract filename from URL
+              const fileName = image.image_url.split('/').pop();
+              if (!fileName) continue;
+              
+              // Source path (in temp folder)
+              const sourcePath = `product-images/temp/${fileName}`;
+              
+              // Destination path (in product folder)
+              const destPath = `product-images/${data.id}/${fileName}`;
+              
+              try {
+                // Copy file from temp to product folder
+                const { error: moveError } = await supabase.storage
+                  .from('products')
+                  .copy(sourcePath, destPath);
+                
+                if (moveError) {
+                  console.error('Error moving image:', moveError);
+                  continue;
+                }
+                
+                // Get URL of the copied file
+                const { data: urlData } = supabase.storage
+                  .from('products')
+                  .getPublicUrl(destPath);
+                
+                // Create image record in database
+                await supabase.from('product_images').insert({
+                  product_id: data.id,
+                  image_url: urlData.publicUrl,
+                  alt_text: image.alt_text,
+                  display_order: image.display_order,
+                  is_primary: image.is_primary
+                });
+                
+                // Clean up temp file
+                await supabase.storage
+                  .from('products')
+                  .remove([sourcePath]);
+              } catch (imgError) {
+                console.error('Error processing image:', imgError);
+              }
+            }
+          }
         }
 
         return data as Product;
@@ -267,6 +332,42 @@ export const useCreateProduct = () => {
   });
 };
 
+// Helper function to organize product images in storage
+const organizeProductImages = async (productId: string, images: ProductImage[] = []) => {
+  if (!productId || !images.length) return;
+  
+  // Fetch existing images in the product folder
+  const { data: existingFiles } = await supabase.storage
+    .from('products')
+    .list(`product-images/${productId}`);
+  
+  if (!existingFiles) return;
+  
+  // Get filenames currently in use from images array
+  const activeFilenames = images.map(img => {
+    const urlParts = img.image_url.split('/');
+    return urlParts[urlParts.length - 1];
+  });
+  
+  // Find files that are no longer used
+  const filesToRemove = existingFiles
+    .filter(file => !activeFilenames.includes(file.name))
+    .map(file => `product-images/${productId}/${file.name}`);
+  
+  // Remove unused files
+  if (filesToRemove.length > 0) {
+    try {
+      await supabase.storage
+        .from('products')
+        .remove(filesToRemove);
+      
+      console.log(`Cleaned up ${filesToRemove.length} unused files`);
+    } catch (error) {
+      console.error('Error cleaning up unused files:', error);
+    }
+  }
+};
+
 export const useUpdateProduct = (productId: string) => {
   const queryClient = useQueryClient();
 
@@ -283,8 +384,7 @@ export const useUpdateProduct = (productId: string) => {
         const allowedFields = [
           'name', 'description', 'price', 'sale_price', 'stock_quantity',
           'is_featured', 'is_active', 'category_id', 'sku', 'weight',
-          'dimensions', 'brand', 'main_image_url', 'slug',
-          'meta_title', 'meta_description', 'keywords'
+          'dimensions', 'brand', 'main_image_url', 'slug'
         ];
         
         // Explicitly remove unit_type since it exists in the form but not in the database
@@ -345,6 +445,70 @@ export const useUpdateProduct = (productId: string) => {
         if (error) {
           console.error('Error updating product:', JSON.stringify(error));
           throw new Error(`Failed to update product: ${error.message || JSON.stringify(error)}`);
+        }
+        
+        // Process images if provided in the update data
+        if (productData.images && productData.images.length > 0) {
+          try {
+            // Clean up storage by removing any unused images
+            await organizeProductImages(productId, productData.images);
+            
+            // Update images in the database if there are changes
+            const { data: existingImages } = await supabase
+              .from('product_images')
+              .select('*')
+              .eq('product_id', productId);
+              
+            // Process each image to determine if it needs to be created, updated or deleted
+            for (const image of productData.images) {
+              if (image.local_only) {
+                // This is a new image that needs to be added to the database
+                await supabase.from('product_images').insert({
+                  product_id: productId,
+                  image_url: image.image_url,
+                  alt_text: image.alt_text,
+                  display_order: image.display_order,
+                  is_primary: image.is_primary
+                });
+              } else if (existingImages) {
+                // Find if this image already exists in the database
+                const existingImage = existingImages.find(img => img.id === image.id);
+                
+                // If it exists and properties have changed, update it
+                if (existingImage && 
+                   (existingImage.display_order !== image.display_order || 
+                    existingImage.is_primary !== image.is_primary || 
+                    existingImage.alt_text !== image.alt_text)) {
+                  
+                  await supabase
+                    .from('product_images')
+                    .update({
+                      alt_text: image.alt_text,
+                      display_order: image.display_order,
+                      is_primary: image.is_primary
+                    })
+                    .eq('id', image.id);
+                }
+              }
+            }
+            
+            // Remove images from database that aren't in the updated list
+            if (existingImages) {
+              const updatedImageIds = productData.images.map(img => img.id);
+              const imagesToDelete = existingImages
+                .filter(img => !updatedImageIds.includes(img.id))
+                .map(img => img.id);
+              
+              if (imagesToDelete.length > 0) {
+                await supabase
+                  .from('product_images')
+                  .delete()
+                  .in('id', imagesToDelete);
+              }
+            }
+          } catch (imageError) {
+            console.error('Error processing images:', imageError);
+          }
         }
 
         return data as Product;
