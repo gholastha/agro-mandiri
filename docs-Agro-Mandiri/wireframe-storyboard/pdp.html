@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fertilizer A - Agro Mandiri | Digital Agriculture Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .price-tier:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .price-tier.active {
+            border-color: #4CAF50;
+            background-color: #f8fff8;
+        }
+        .variant-btn.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .image-thumbnail.active {
+            border-color: #4CAF50;
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+        .sticky-header.scrolled {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Sticky Header -->
+    <header class="sticky-header bg-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <img src="https://via.placeholder.com/40x40" alt="Agro Mandiri Logo" class="h-10 w-10">
+                    <span class="ml-2 text-xl font-bold text-green-600">Agro Mandiri</span>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 mx-6">
+                    <div class="relative w-full max-w-xl">
+                        <input type="text" placeholder="Search for fertilizers, pesticides..." 
+                            class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button class="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-green-600">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Navigation Icons -->
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-gray-600 hover:text-green-600">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <button class="p-2 text-gray-600 hover:text-green-600 relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
+                    <button class="p-2 text-gray-600 hover:text-green-600">
+                        <i class="far fa-user"></i>
+                    </button>
+                    <button class="md:hidden p-2 text-gray-600 hover:text-green-600">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumbs -->
+    <div class="bg-gray-100 py-3">
+        <div class="container mx-auto px-4">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600">
+                            <i class="fas fa-home mr-2"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                            <a href="#" class="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2">Products</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                            <a href="#" class="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2">Fertilizers</a>
+                        </div>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                            <span class="ml-1 text-sm font-medium text-green-600 md:ml-2">Fertilizer A</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Product Section -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Product Images (Left Column) -->
+            <div class="lg:w-1/2">
+                <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+                    <div class="relative h-80 md:h-96 w-full overflow-hidden rounded-lg mb-4">
+                        <img id="mainImage" src="https://via.placeholder.com/600x600?text=Fertilizer+A" alt="Fertilizer A" class="w-full h-full object-contain">
+                        <button class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
+                            <i class="fas fa-expand text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button class="image-thumbnail h-20 border-2 border-transparent rounded-md overflow-hidden active" onclick="changeImage('https://via.placeholder.com/600x600?text=Fertilizer+A')">
+                            <img src="https://via.placeholder.com/600x600?text=Fertilizer+A" alt="Thumbnail 1" class="w-full h-full object-cover">
+                        </button>
+                        <button class="image-thumbnail h-20 border-2 border-transparent rounded-md overflow-hidden" onclick="changeImage('https://via.placeholder.com/600x600?text=Fertilizer+A+Side')">
+                            <img src="https://via.placeholder.com/600x600?text=Fertilizer+A+Side" alt="Thumbnail 2" class="w-full h-full object-cover">
+                        </button>
+                        <button class="image-thumbnail h-20 border-2 border-transparent rounded-md overflow-hidden" onclick="changeImage('https://via.placeholder.com/600x600?text=Fertilizer+A+Close')">
+                            <img src="https://via.placeholder.com/600x600?text=Fertilizer+A+Close" alt="Thumbnail 3" class="w-full h-full object-cover">
+                        </button>
+                        <button class="image-thumbnail h-20 border-2 border-transparent rounded-md overflow-hidden" onclick="changeImage('https://via.placeholder.com/600x600?text=Fertilizer+A+Pack')">
+                            <img src="https://via.placeholder.com/600x600?text=Fertilizer+A+Pack" alt="Thumbnail 4" class="w-full h-full object-cover">
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Info (Right Column) -->
+            <div class="lg:w-1/2">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <!-- Product Title & Brand -->
+                    <div class="mb-4">
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-1">Fertilizer A</h1>
+                        <div class="flex items-center">
+                            <span class="text-sm text-gray-500">Brand: <span class="text-gray-700">AgroPlus</span></span>
+                            <span class="mx-2 text-gray-300">|</span>
+                            <span class="text-sm text-gray-500">SKU: <span class="text-gray-700">AGR-FA-50</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Ratings -->
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400 mr-2">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <a href="#reviews" class="text-sm text-green-600 hover:underline">4.5 (128 reviews)</a>
+                    </div>
+
+                    <!-- Retail Price -->
+                    <div class="mb-6 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <div class="flex items-center">
+                            <i class="fas fa-tag text-yellow-500 mr-2"></i>
+                            <span class="text-sm text-gray-700">Retail Price: <span class="font-semibold">Rp. 11,000/kg</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Variant Selection -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">PACKAGING SIZE</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="variant-btn px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 active" onclick="selectVariant('50kg')">
+                                50 kg Sack
+                            </button>
+                            <button class="variant-btn px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50" onclick="selectVariant('25kg')">
+                                25 kg Sack
+                            </button>
+                            <button class="variant-btn px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50" onclick="selectVariant('5kg')">
+                                5 kg Bag
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Input -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">QUANTITY</h3>
+                        <div class="flex items-center">
+                            <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-l-lg" onclick="decrementQuantity()">
+                                -
+                            </button>
+                            <input type="number" id="quantity" value="1" min="1" class="w-16 text-center border-t border-b border-gray-300 py-2">
+                            <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-r-lg" onclick="incrementQuantity()">
+                                +
+                            </button>
+                            <span class="ml-2 text-sm text-gray-600">Sacks (50 kg each)</span>
+                        </div>
+                    </div>
+
+                    <!-- Tiered Pricing -->
+                    <div class="mb-8">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-3">VOLUME DISCOUNT</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div class="price-tier p-3 border border-gray-200 rounded-lg transition-all cursor-pointer active" onclick="selectTier(1, 39, 10000)">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium text-gray-800">1 - 39 Sacks</h4>
+                                        <p class="text-sm text-gray-600">Rp. 10,000/kg</p>
+                                    </div>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Save 9%</span>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-700 hidden tier-total">
+                                    Total: <span class="font-semibold">Rp. 500,000</span>
+                                </div>
+                            </div>
+                            <div class="price-tier p-3 border border-gray-200 rounded-lg transition-all cursor-pointer" onclick="selectTier(40, 99, 7500)">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium text-gray-800">40 - 99 Sacks</h4>
+                                        <p class="text-sm text-gray-600">Rp. 7,500/kg</p>
+                                    </div>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Save 32%</span>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-700 hidden tier-total">
+                                    Total: <span class="font-semibold">Rp. 375,000</span>
+                                </div>
+                            </div>
+                            <div class="price-tier p-3 border border-gray-200 rounded-lg transition-all cursor-pointer" onclick="selectTier(100, 199, 6250)">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium text-gray-800">100 - 199 Sacks</h4>
+                                        <p class="text-sm text-gray-600">Rp. 6,250/kg</p>
+                                    </div>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Save 43%</span>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-700 hidden tier-total">
+                                    Total: <span class="font-semibold">Rp. 312,500</span>
+                                </div>
+                            </div>
+                            <div class="price-tier p-3 border border-gray-200 rounded-lg transition-all cursor-pointer" onclick="selectTier(200, 299, 5000)">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium text-gray-800">200 - 299 Sacks</h4>
+                                        <p class="text-sm text-gray-600">Rp. 5,000/kg</p>
+                                    </div>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Save 55%</span>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-700 hidden tier-total">
+                                    Total: <span class="font-semibold">Rp. 250,000</span>
+                                </div>
+                            </div>
+                            <div class="price-tier p-3 border border-gray-200 rounded-lg transition-all cursor-pointer" onclick="selectTier(300, 599, 3750)">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium text-gray-800">300 - 599 Sacks</h4>
+                                        <p class="text-sm text-gray-600">Rp. 3,750/kg</p>
+                                    </div>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Save 66%</span>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-700 hidden tier-total">
+                                    Total: <span class="font-semibold">Rp. 187,500</span>
+                                </div>
+                            </div>
+                            <div class="price-tier p-3 border border-gray-200 rounded-lg transition-all cursor-pointer" onclick="selectTier(600, 9999, 2500)">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium text-gray-800">600+ Sacks</h4>
+                                        <p class="text-sm text-gray-600">Rp. 2,500/kg</p>
+                                    </div>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Save 77%</span>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-700 hidden tier-total">
+                                    Total: <span class="font-semibold">Rp. 125,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price Summary -->
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-600">Subtotal (1 Sack):</span>
+                            <span class="font-semibold text-gray-800">Rp. 500,000</span>
+                        </div>
+                        <div class="flex justify-between items-center text-green-600">
+                            <span>You Save:</span>
+                            <span class="font-semibold">Rp. 50,000</span>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
+                            <span class="text-lg font-bold text-gray-800">Total:</span>
+                            <span class="text-2xl font-bold text-green-600">Rp. 500,000</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+                        </button>
+                        <button class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-bolt mr-2"></i> Buy Now
+                        </button>
+                        <button class="w-12 h-12 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+
+                    <!-- Delivery Info -->
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="flex items-start">
+                            <i class="fas fa-truck text-blue-500 mt-1 mr-2"></i>
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    <span class="font-medium">Free delivery</span> for orders above Rp. 1,000,000 in Jakarta area. 
+                                    <a href="#" class="text-blue-600 hover:underline">Check other areas</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Tabs -->
+        <div class="mt-8 bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="border-b border-gray-200">
+                <nav class="flex -mb-px">
+                    <button onclick="openTab(event, 'description')" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm border-green-500 text-green-600">
+                        <i class="fas fa-info-circle mr-2"></i>Description
+                    </button>
+                    <button onclick="openTab(event, 'specs')" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i class="fas fa-list-ul mr-2"></i>Specifications
+                    </button>
+                    <button onclick="openTab(event, 'certifications')" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i class="fas fa-certificate mr-2"></i>Certifications
+                    </button>
+                </nav>
+            </div>
+            <div class="p-6">
+                <div id="description" class="tab-content active">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Product Description</h3>
+                    <p class="text-gray-700 mb-4">
+                        Fertilizer A is a high-quality, balanced NPK fertilizer specially formulated for agricultural crops. 
+                        It provides essential nutrients to promote healthy plant growth and maximize yield potential.
+                    </p>
+                    <h4 class="font-medium text-gray-800 mb-2">Key Benefits:</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4 space-y-1">
+                        <li>Promotes vigorous plant growth and development</li>
+                        <li>Enhances root development and nutrient uptake</li>
+                        <li>Improves soil fertility and structure</li>
+                        <li>Increases resistance to diseases and environmental stress</li>
+                        <li>Suitable for a wide range of crops including rice, corn, vegetables, and fruits</li>
+                    </ul>
+                    <h4 class="font-medium text-gray-800 mb-2">Application:</h4>
+                    <p class="text-gray-700">
+                        Apply evenly to the soil before planting or during the growing season. 
+                        For best results, incorporate into the top 5-10 cm of soil. 
+                        Application rates vary depending on crop type and soil conditions.
+                    </p>
+                </div>
+                <div id="specs" class="tab-content">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Technical Specifications</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">Composition</h4>
+                            <table class="w-full text-sm text-gray-700">
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2">Nitrogen (N)</td>
+                                    <td class="py-2 text-right">15%</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2">Phosphorus (P₂O₅)</td>
+                                    <td class="py-2 text-right">15%</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2">Potassium (K₂O)</td>
+                                    <td class="py-2 text-right">15%</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2">Sulfur (S)</td>
+                                    <td class="py-2 text-right">5%</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2">Magnesium (MgO)</td>
+                                    <td class="py-2 text-right">2%</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">Physical Properties</h4>
+                            <table class="w-full text-sm text-gray-700">
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2">Appearance</td>
+                                    <td class="py-2 text-right">Granular</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2">Color</td>
+                                    <td class="py-2 text-right">Light gray</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2">Particle Size</td>
+                                    <td class="py-2 text-right">2-4 mm</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2">Bulk Density</td>
+                                    <td class="py-2 text-right">1.0-1.2 g/cm³</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2">Solubility</td>
+                                    <td class="py-2 text-right">90% in water</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="certifications" class="tab-content">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Certifications & Standards</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="p-4 border border-gray-200 rounded-lg flex flex-col items-center">
+                            <img src="https://via.placeholder.com/80x80?text=ISO" alt="ISO Certified" class="h-16 w-16 mb-2">
+                            <span class="text-sm font-medium text-gray-700 text-center">ISO 9001:2015 Certified</span>
+                        </div>
+                        <div class="p-4 border border-gray-200 rounded-lg flex flex-col items-center">
+                            <img src="https://via.placeholder.com/80x80?text=SNI" alt="SNI Certified" class="h-16 w-16 mb-2">
+                            <span class="text-sm font-medium text-gray-700 text-center">SNI 2801:2010 Certified</span>
+                        </div>
+                        <div class="p-4 border border-gray-200 rounded-lg flex flex-col items-center">
+                            <img src="https://via.placeholder.com/80x80?text=OMRI" alt="OMRI Listed" class="h-16 w-16 mb-2">
+                            <span class="text-sm font-medium text-gray-700 text-center">OMRI Listed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div id="reviews" class="mt-8 bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">Customer Reviews</h3>
+            </div>
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <div class="mb-4 md:mb-0">
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 mr-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-gray-700">4.5 out of 5</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Based on 128 reviews</p>
+                    </div>
+                    <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg">
+                        <i class="fas fa-pen mr-2"></i> Write a Review
+                    </button>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Review 1 -->
+                    <div class="border-b border-gray-200 pb-6">
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 mr-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Excellent quality</span>
+                        </div>
+                        <p class="text-gray-700 mb-2">By <span class="font-medium">Budi Santoso</span> on October 15, 2023</p>
+                        <p class="text-gray-700">
+                            This fertilizer has significantly improved my rice yield. The plants grew healthier and stronger compared to when I used other brands. Will definitely purchase again.
+                        </p>
+                    </div>
+
+                    <!-- Review 2 -->
+                    <div class="border-b border-gray-200 pb-6">
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 mr-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Good value</span>
+                        </div>
+                        <p class="text-gray-700 mb-2">By <span class="font-medium">Siti Rahayu</span> on September 28, 2023</p>
+                        <p class="text-gray-700">
+                            The fertilizer works well for my vegetable farm. The price is reasonable for the quality. Delivery was fast and the packaging was secure.
+                        </p>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div class="pb-6">
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 mr-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Satisfied customer</span>
+                        </div>
+                        <p class="text-gray-700 mb-2">By <span class="font-medium">Agus Wijaya</span> on September 10, 2023</p>
+                        <p class="text-gray-700">
+                            Used this for my corn field and saw noticeable improvement in plant growth. The granules are uniform and easy to spread. Will recommend to fellow farmers.
+                        </p>
+                    </div>
+                </div>
+
+                <button class="mt-6 text-green-600 font-medium hover:underline">
+                    <i class="fas fa-chevron-down mr-1"></i> Show all 128 reviews
+                </button>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="mt-8">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">You May Also Like</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Product 1 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="relative">
+                        <img src="https://via.placeholder.com/300x300?text=Fertilizer+B" alt="Fertilizer B" class="w-full h-40 object-contain">
+                        <button class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-medium text-gray-800 mb-1">Fertilizer B</h4>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 mr-1">
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star-half-alt text-xs"></i>
+                            </div>
+                            <span class="text-xs text-gray-500">(42)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-lg font-bold text-green-600">Rp. 480,000</span>
+                            <span class="ml-2 text-xs text-gray-500 line-through">Rp. 550,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="relative">
+                        <img src="https://via.placeholder.com/300x300?text=Pesticide+X" alt="Pesticide X" class="w-full h-40 object-contain">
+                        <button class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-medium text-gray-800 mb-1">Pesticide X</h4>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 mr-1">
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="far fa-star text-xs"></i>
+                            </div>
+                            <span class="text-xs text-gray-500">(28)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-lg font-bold text-green-600">Rp. 2,160,000</span>
+                            <span class="ml-2 text-xs text-gray-500">/box</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="relative">
+                        <img src="https://via.placeholder.com/300x300?text=Organic+Compost" alt="Organic Compost" class="w-full h-40 object-contain">
+                        <button class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-medium text-gray-800 mb-1">Organic Compost</h4>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 mr-1">
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                            </div>
+                            <span class="text-xs text-gray-500">(65)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-lg font-bold text-green-600">Rp. 350,000</span>
+                            <span class="ml-2 text-xs text-gray-500 line-through">Rp. 400,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="relative">
+                        <img src="https://via.placeholder.com/300x300?text=Seed+Variety" alt="Seed Variety" class="w-full h-40 object-contain">
+                        <button class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-medium text-gray-800 mb-1">Premium Rice Seeds</h4>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 mr-1">
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star-half-alt text-xs"></i>
+                            </div>
+                            <span class="text-xs text-gray-500">(37)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-lg font-bold text-green-600">Rp. 1,250,000</span>
+                            <span class="ml-2 text-xs text-gray-500">/25kg</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Section -->
+        <div class="mt-12">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-800">Agriculture Tips & News</h3>
+                <a href="#" class="text-green-600 font-medium hover:underline">View all</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Article 1 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <img src="https://via.placeholder.com/600x400?text=Farming+Tips" alt="Farming Tips" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <span class="inline-block px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full mb-2">Tips</span>
+                        <h4 class="font-semibold text-gray-800 mb-2">How to Maximize Fertilizer Efficiency</h4>
+                        <p class="text-gray-600 text-sm mb-3">Learn the best practices for applying fertilizers to get the most out of your crops while minimizing waste.</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span>October 5, 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>5 min read</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 2 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <img src="https://via.placeholder.com/600x400?text=Soil+Health" alt="Soil Health" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full mb-2">Science</span>
+                        <h4 class="font-semibold text-gray-800 mb-2">Understanding Soil pH and Nutrient Availability</h4>
+                        <p class="text-gray-600 text-sm mb-3">Discover how soil pH affects nutrient uptake and what you can do to optimize your soil conditions.</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span>September 22, 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>7 min read</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 3 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <img src="https://via.placeholder.com/600x400?text=Organic+Farming" alt="Organic Farming" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full mb-2">Trends</span>
+                        <h4 class="font-semibold text-gray-800 mb-2">The Rise of Organic Farming in Indonesia</h4>
+                        <p class="text-gray-600 text-sm mb-3">Explore how Indonesian farmers are transitioning to organic methods and the benefits they're experiencing.</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span>September 10, 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>8 min read</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- About -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">About Agro Mandiri</h4>
+                    <p class="text-gray-400 mb-4">
+                        Agro Mandiri is Indonesia's leading digital agriculture marketplace, connecting farmers with quality agricultural inputs at competitive prices.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Products</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Categories -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Categories</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Fertilizers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Pesticides</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Seeds</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Tools & Equipment</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Organic Products</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Us</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">Jl. Pertanian No. 123, Jakarta Selatan, Indonesia</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">+62 21 1234 5678</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">info@agromandiri.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                        © 2023 Agro Mandiri. All rights reserved.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Privacy Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Terms of Service</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Shipping Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Change main product image when thumbnail is clicked
+        function changeImage(src) {
+            document.getElementById('mainImage').src = src;
+            
+            // Update active state for thumbnails
+            const thumbnails = document.querySelectorAll('.image-thumbnail');
+            thumbnails.forEach(thumb => {
+                thumb.classList.remove('active');
+                if (thumb.querySelector('img').src.includes(src.split('?')[1])) {
+                    thumb.classList.add('active');
+                }
+            });
+        }
+
+        // Select product variant
+        function selectVariant(variant) {
+            const variantButtons = document.querySelectorAll('.variant-btn');
+            variantButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.trim().includes(variant)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Here you would typically update pricing and other details based on variant
+            // For demo purposes, we'll just log the selected variant
+            console.log('Selected variant:', variant);
+        }
+
+        // Quantity controls
+        function incrementQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+            updatePrice();
+        }
+
+        function decrementQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            if (parseInt(quantityInput.value) > 1) {
+                quantityInput.value = parseInt(quantityInput.value) - 1;
+                updatePrice();
+            }
+        }
+
+        // Select pricing tier
+        function selectTier(min, max, pricePerKg) {
+            const tiers = document.querySelectorAll('.price-tier');
+            tiers.forEach(tier => {
+                tier.classList.remove('active');
+                
+                // Show tier total for all tiers (for demo purposes)
+                const tierTotal = tier.querySelector('.tier-total');
+                tierTotal.classList.remove('hidden');
+            });
+            
+            // Highlight selected tier
+            event.currentTarget.classList.add('active');
+            
+            // Update quantity input range
+            const quantityInput = document.getElementById('quantity');
+            quantityInput.min = min;
+            quantityInput.max = max;
+            
+            // Store the selected price per kg for calculations
+            quantityInput.dataset.pricePerKg = pricePerKg;
+            
+            // Update price display
+            updatePrice();
+        }
+
+        // Update price based on quantity and selected tier
+        function updatePrice() {
+            const quantityInput = document.getElementById('quantity');
+            const quantity = parseInt(quantityInput.value);
+            const pricePerKg = parseFloat(quantityInput.dataset.pricePerKg || 10000); // Default to first tier
+            
+            const totalPrice = quantity * 50 * pricePerKg; // 50 kg per sack
+            const retailPrice = quantity * 50 * 11000; // Retail price is 11,000/kg
+            const savings = retailPrice - totalPrice;
+            
+            // Update price summary
+            document.querySelector('.price-summary .subtotal').textContent = `Rp. ${totalPrice.toLocaleString('id-ID')}`;
+            document.querySelector('.price-summary .savings').textContent = `Rp. ${savings.toLocaleString('id-ID')}`;
+            document.querySelector('.price-summary .total').textContent = `Rp. ${totalPrice.toLocaleString('id-ID')}`;
+        }
+
+        // Tab functionality
+        function openTab(evt, tabName) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('border-green-500', 'text-green-600');
+                button.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('border-green-500', 'text-green-600');
+            evt.currentTarget.classList.remove('border-transparent', 'text-gray-500');
+        }
+
+        // Initialize with first tier selected
+        document.addEventListener('DOMContentLoaded', function() {
+            selectTier(1, 39, 10000);
+            
+            // Make header sticky on scroll
+            const header = document.querySelector('.sticky-header');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+            
+            // Update price when quantity input changes
+            document.getElementById('quantity').addEventListener('change', updatePrice);
+        });
+    </script>
+</body>
+</html>
