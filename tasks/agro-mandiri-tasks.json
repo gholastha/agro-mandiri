@@ -1,0 +1,168 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Setup Next.js Project with Tailwind CSS and shadcn/ui",
+      "status": "pending",
+      "priority": "high",
+      "description": "Initialize the project structure and setup core technologies",
+      "details": "Create a new Next.js (App Router) project with TypeScript support. Configure Tailwind CSS and integrate shadcn/ui component library. Set up the basic folder structure including pages, components, lib, and stores directories. Configure ESLint and Prettier for code quality. Create initial README.md with project overview and setup instructions.",
+      "testStrategy": "Verify that the application runs without errors. Confirm that Tailwind CSS styles apply correctly. Test that shadcn/ui components render properly. Validate TypeScript configuration.",
+      "subtasks": []
+    },
+    {
+      "id": "2",
+      "title": "Implement Supabase Integration",
+      "status": "pending",
+      "dependencies": ["1"],
+      "priority": "high",
+      "description": "Set up Supabase as the backend database and authentication system",
+      "details": "Initialize Supabase project. Set up database tables for users, products, categories, orders, and reviews. Configure authentication with email/password and social login options. Create API endpoints for data access. Implement storage buckets for product images and assets. Set up Supabase client in the Next.js application.",
+      "testStrategy": "Test user registration and login flows. Verify database queries return expected data. Confirm that file uploads to storage work correctly. Validate authentication tokens and session management.",
+      "subtasks": []
+    },
+    {
+      "id": "3",
+      "title": "Develop User Authentication and Basic Profile",
+      "status": "pending",
+      "dependencies": ["2"],
+      "priority": "high",
+      "description": "Create user authentication system with registration, login, and basic profile management",
+      "details": "Implement user registration form with email verification. Create login page with remember me functionality. Build user profile page with basic information display and edit capabilities. Implement password reset functionality. Add session management with Supabase Auth. Create protected routes for authenticated users.",
+      "testStrategy": "Test registration with valid and invalid inputs. Verify email verification process. Test login with correct and incorrect credentials. Confirm profile information updates correctly. Validate password reset flow works as expected.",
+      "subtasks": []
+    },
+    {
+      "id": "4",
+      "title": "Create Product Catalog with Categories",
+      "status": "pending",
+      "dependencies": ["2"],
+      "priority": "high",
+      "description": "Build the product catalog system with category management",
+      "details": "Design and implement product and category database schemas. Create product listing pages with basic filtering by category. Implement category navigation components (mega menu, sidebar). Build product card components with essential information (image, name, price). Create admin interfaces for product and category management. Implement image upload and management for products.",
+      "testStrategy": "Verify that products display correctly in listings. Confirm that category filtering works as expected. Test product and category creation, editing, and deletion in admin interface. Validate image uploads and display.",
+      "subtasks": []
+    },
+    {
+      "id": "5",
+      "title": "Implement Simple Product Search and Filtering",
+      "status": "pending",
+      "dependencies": ["4"],
+      "priority": "high",
+      "description": "Create basic product search and filtering functionality",
+      "details": "Implement text-based search functionality. Create basic filtering UI for categories and price ranges. Set up Zustand store for search and filter state management. Develop search results page with relevant product display. Implement server-side filtering logic with Supabase queries. Add sorting options (price low-high, high-low, newest).",
+      "testStrategy": "Test search with various keywords. Verify filter combinations return expected results. Confirm sorting options work correctly. Validate that empty search results handle gracefully. Test performance with large result sets.",
+      "subtasks": []
+    },
+    {
+      "id": "6",
+      "title": "Develop Product Detail Pages",
+      "status": "pending",
+      "dependencies": ["4"],
+      "priority": "high",
+      "description": "Create detailed product pages with essential information",
+      "details": "Design and implement product detail page layout. Create image carousel for product photos. Display product information (name, price, description, benefits, application). Implement quantity selector. Add 'Add to Cart' functionality. Include breadcrumb navigation. Create responsive design for mobile and desktop.",
+      "testStrategy": "Verify all product information displays correctly. Test image carousel functionality. Confirm quantity selector updates correctly. Validate 'Add to Cart' adds products with correct quantity. Test responsive behavior on various screen sizes.",
+      "subtasks": []
+    },
+    {
+      "id": "7",
+      "title": "Implement Shopping Cart Functionality",
+      "status": "pending",
+      "dependencies": ["6"],
+      "priority": "high",
+      "description": "Create shopping cart system with basic operations",
+      "details": "Design and implement cart state management with Zustand. Create cart UI with product list, quantities, and prices. Implement add, remove, and update quantity operations. Calculate subtotal, tax, and total prices. Add cart persistence with local storage. Create cart icon with item count in header.",
+      "testStrategy": "Test adding products to cart with various quantities. Verify removing items works correctly. Confirm quantity updates reflect in totals. Validate cart persistence across page refreshes. Test cart with multiple items of different types.",
+      "subtasks": []
+    },
+    {
+      "id": "8",
+      "title": "Develop Checkout Process",
+      "status": "pending",
+      "dependencies": ["7"],
+      "priority": "high",
+      "description": "Create simplified checkout flow with COD payment option",
+      "details": "Design and implement checkout page with shipping information form. Create checkout stepper UI (Cart > Shipping > Payment). Implement form validation with Zod. Add COD payment option. Create order summary display. Generate basic order confirmation with order number. Implement order storage in database.",
+      "testStrategy": "Test checkout form with valid and invalid inputs. Verify validation errors display appropriately. Confirm order creation in database. Test order confirmation display. Validate that cart clears after successful order.",
+      "subtasks": []
+    },
+    {
+      "id": "9",
+      "title": "Create Basic Admin Dashboard",
+      "status": "pending",
+      "dependencies": ["3", "4"],
+      "priority": "high",
+      "description": "Develop minimal admin interface for product management",
+      "details": "Design and implement admin dashboard layout with navigation sidebar. Create product management interface (list, create, edit, delete). Implement category management UI. Add basic authentication and authorization for admin users. Create simple product statistics display. Implement admin-only routes and middleware.",
+      "testStrategy": "Verify admin authentication works correctly. Test product CRUD operations in admin interface. Confirm category management functions as expected. Validate that non-admin users cannot access admin routes.",
+      "subtasks": []
+    },
+    {
+      "id": "10",
+      "title": "Enhance Product Search with Autocomplete",
+      "status": "pending",
+      "dependencies": ["5"],
+      "priority": "medium",
+      "description": "Improve search functionality with autocomplete suggestions",
+      "details": "Implement search input with autocomplete dropdown. Create backend endpoint for search suggestions. Optimize search queries for performance. Add keyboard navigation for autocomplete results. Implement search history for logged-in users. Add search analytics tracking.",
+      "testStrategy": "Test autocomplete with various input patterns. Verify keyboard navigation works correctly. Confirm search suggestions are relevant. Validate that selecting a suggestion navigates to correct product. Test performance with rapid typing.",
+      "subtasks": []
+    },
+    {
+      "id": "11",
+      "title": "Implement Comprehensive Filtering Options",
+      "status": "pending",
+      "dependencies": ["5"],
+      "priority": "medium",
+      "description": "Develop advanced filtering system for product listings",
+      "details": "Expand filter UI with additional options (brand, type, specifications). Implement multi-select filters with Zustand state management. Create price range slider component. Add filter persistence across navigation. Optimize filter query performance with proper indexing. Implement filter count indicators.",
+      "testStrategy": "Test combinations of multiple filters. Verify filter persistence works across page navigation. Confirm price range slider functions correctly. Validate that clear filters button resets all options. Test performance with many active filters.",
+      "subtasks": []
+    },
+    {
+      "id": "12",
+      "title": "Develop Product Variants and Customization",
+      "status": "pending",
+      "dependencies": ["6"],
+      "priority": "medium",
+      "description": "Implement product variants and customization options",
+      "details": "Design variant data model (weight, size, formulation). Create variant selector UI on product detail page. Implement dynamic pricing based on variant selection. Add variant-specific inventory management. Update cart functionality to handle variants. Implement variant images when available.",
+      "testStrategy": "Test variant selection updates product details correctly. Verify pricing changes with variant selection. Confirm inventory tracking works per variant. Validate that cart correctly stores variant information. Test variant display in order summary.",
+      "subtasks": []
+    },
+    {
+      "id": "13",
+      "title": "Create Wishlist Functionality",
+      "status": "pending",
+      "dependencies": ["3", "6"],
+      "priority": "medium",
+      "description": "Implement wishlist system for saved products",
+      "details": "Design wishlist data model. Create 'Add to Wishlist' functionality on product cards and detail pages. Implement wishlist page with saved products. Add 'Move to Cart' option from wishlist. Implement wishlist state management with Zustand. Create wishlist icon with count in header.",
+      "testStrategy": "Test adding and removing products from wishlist. Verify wishlist persistence for logged-in users. Confirm 'Move to Cart' functionality works correctly. Validate wishlist count updates in real-time. Test wishlist with various product types.",
+      "subtasks": []
+    },
+    {
+      "id": "14",
+      "title": "Enhance Product Detail Pages with Tabs",
+      "status": "pending",
+      "dependencies": ["6"],
+      "priority": "medium",
+      "description": "Improve product detail pages with tabbed information",
+      "details": "Implement tabbed interface for product information. Create sections for Description, Type, Benefits, Application, and Reviews. Design responsive tab layout for mobile and desktop. Add animation for tab transitions. Implement deep linking to specific tabs. Create tab state management.",
+      "testStrategy": "Verify all tabs display correct information. Test tab switching behavior. Confirm deep links navigate to correct tab. Validate responsive behavior on various screen sizes. Test keyboard navigation between tabs.",
+      "subtasks": []
+    },
+    {
+      "id": "15",
+      "title": "Develop Dose Calculator for Agricultural Products",
+      "status": "pending",
+      "dependencies": ["14"],
+      "priority": "medium",
+      "description": "Create interactive dose calculator for fertilizers and pesticides",
+      "details": "Design calculator algorithm based on product type, land area, and crop type. Create calculator UI with input fields and result display. Implement form validation with Zod. Add unit conversion options (acres, hectares, square meters). Create product-specific calculation rules. Implement calculation history for logged-in users.",
+      "testStrategy": "Test calculations with various inputs against expected results. Verify validation prevents invalid inputs. Confirm unit conversions calculate correctly. Validate calculator works across different product types. Test edge cases with extreme values.",
+      "subtasks": []
+    }
+  ]
+}

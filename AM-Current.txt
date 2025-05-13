@@ -1,0 +1,153 @@
+# Wawasan Proyek Agro Mandiri
+
+## Ikhtisar Proyek
+
+Agro Mandiri adalah platform E-Commerce untuk produk pertanian Indonesia yang berfokus pada:
+- **Kategori Produk**: Pupuk, Pestisida, Benih, dan Peralatan
+- **Teknologi yang Digunakan**: Next.js (App Router), Tailwind CSS + shadcn/ui, backend Supabase, Zod untuk validasi, Zustand untuk manajemen state
+- **Arsitektur**: Model client-server dengan komponen rendering sisi server dan sisi klien
+
+## Status dan Tantangan Saat Ini
+
+### 1. Struktur Database
+- **Tabel Utama**: Berhasil diimplementasikan (products, categories, manufacturers, users, orders)
+- **Masalah Kolom SEO**: Kolom yang hilang sudah diperbaiki (`meta_title`, `meta_description`, `keywords`), tetapi kode mencoba mengakses `keyword` (tunggal) alih-alih `keywords` (jamak)
+- **Relasi Data**: Terstruktur dengan baik dengan foreign key dan batasan
+
+### 2. Fungsionalitas Dashboard Admin
+- **Fitur yang Berfungsi**: Navigasi dasar, daftar produk, manajemen kategori
+- **Area Bermasalah**:
+  - Form produk (4 tab: Informasi Dasar, Inventaris, Gambar Produk, SEO)
+  - Upload gambar tidak berfungsi (tombol upload tidak ada atau error saat upload)
+  - Pembaruan produk gagal dengan error ketidakcocokan nama kolom
+
+### 3. Pengembangan Sisi Klien
+- **Status Saat Ini**: Terhambat menunggu penyelesaian dashboard admin
+- **Halaman Utama**: Struktur dasar direncanakan tetapi belum sepenuhnya diimplementasikan
+- **Daftar Produk**: Skema siap tetapi implementasi UI belum lengkap
+- **Keranjang Belanja**: Struktur database siap, implementasi front-end tertunda
+
+## Analisis Masalah Manajemen Produk
+
+### Ketidakcocokan Nama Kolom
+Pesan error saat ini menunjukkan masalah kritis:
+```
+Cannot find column 'keyword' from 'product' in schema cache
+```
+
+Ini terjadi karena:
+1. Database kita memiliki kolom bernama `keywords` (jamak)
+2. Kode mencoba mengakses `keyword` (tunggal)
+3. Ketidakcocokan ini mencegah pembaruan produk
+
+### Masalah Upload Gambar
+Fungsi upload gambar tampaknya memiliki dua masalah berbeda:
+1. **Selama pembuatan produk**: Tidak ada tombol upload
+2. **Selama pengeditan produk**: Tombol upload ada tetapi mengembalikan error
+
+Masalah ini kemungkinan disebabkan oleh:
+- Konfigurasi bucket penyimpanan yang tidak benar di Supabase
+- Fungsi pemrosesan gambar yang hilang atau tidak lengkap
+- Kondisi perlombaan (race condition) antara pembuatan produk dan upload gambar
+
+## Analisis Alur Data
+
+Alur data saat ini untuk manajemen produk:
+
+1. **Pembuatan Produk**:
+   - Data form frontend → mutasi useCreateProduct → tabel products di Supabase
+   - Gambar seharusnya mengalir ke: Form → Bucket penyimpanan → tabel product_images, tetapi ini rusak
+
+2. **Pembaruan Produk**:
+   - Mutasi useUpdateProduct gagal karena ketidakcocokan nama kolom
+   - Secara spesifik mencari `keyword` saat database memiliki `keywords`
+
+## Rencana Kerja dan Tugas
+
+Untuk menyelesaikan dashboard admin dan membuka blokir pengembangan sisi klien:
+
+### Perbaikan Segera (1-2 hari)
+1. **Memperbaiki ketidakcocokan nama kolom**:
+   - Mengubah nama kolom database dari `keywords` menjadi `keyword`, atau
+   - Memperbarui referensi kode dari `keyword` menjadi `keywords`
+
+2. **Fungsionalitas upload gambar**:
+   - Debug dan perbaiki komponen upload gambar
+   - Pastikan konfigurasi bucket penyimpanan Supabase yang tepat
+
+### Tugas Jangka Pendek (3-5 hari)
+1. **Menyelesaikan Dashboard Admin**:
+   - Memperbaiki semua operasi CRUD untuk produk
+   - Memastikan manajemen kategori berfungsi dengan baik
+   - Mengimplementasikan fitur manajemen pesanan
+
+2. **Pengujian & Validasi**:
+   - Membuat kasus uji komprehensif untuk fungsi admin
+   - Memverifikasi semua operasi database berfungsi dengan benar
+
+### Tugas Jangka Menengah (1-2 minggu)
+1. **Pengembangan Sisi Klien**:
+   - Mengimplementasikan halaman utama dengan komponen yang diperlukan
+   - Membangun halaman daftar dan detail produk
+   - Membuat fungsionalitas keranjang belanja
+
+2. **Autentikasi & Profil Pengguna**:
+   - Menyelesaikan alur pendaftaran/login pengguna
+   - Mengimplementasikan manajemen profil
+
+## Rekomendasi
+
+1. **Sinkronisasi Kode-Database**:
+   - Perbaiki ketidakcocokan `keyword` vs `keywords` segera
+   - Implementasikan pemeriksaan TypeScript untuk memastikan kode dan skema database selaras
+
+2. **Peningkatan Manajemen Gambar**:
+   - Gunakan pendekatan bertahap untuk pembuatan produk:
+     - Langkah 1: Buat produk (Info Dasar + Inventaris)
+     - Langkah 2: Tambahkan gambar ke produk yang ada
+     - Langkah 3: Tambahkan informasi SEO
+
+3. **Pengalaman Pengembang**:
+   - Buat lebih banyak alat diagnostik seperti utilitas fix-database
+   - Tambahkan pencatatan error yang komprehensif dengan pesan detail
+   - Sediakan lebih banyak alat debugging interaktif
+
+4. **Manajemen Proyek**:
+   - Prioritaskan penyelesaian dashboard admin sebelum pengembangan sisi klien
+   - Buat lingkungan staging untuk pengujian
+   - Dokumentasikan semua endpoint API dan skema database
+
+## Solusi Teknis
+
+### 1. Perbaikan untuk Ketidakcocokan Keyword/Keywords
+
+Ini tampaknya menjadi masalah yang paling kritis. Anda memiliki dua opsi:
+
+**Opsi A: Ubah kolom database**
+```sql
+ALTER TABLE products RENAME COLUMN keywords TO keyword;
+```
+
+**Opsi B: Perbarui referensi kode** (direkomendasikan)
+Cari instance `keyword` di kode Anda dan ubah menjadi `keywords`:
+
+- Periksa `src/api/hooks/useProducts.ts` sekitar baris 322 
+- Periksa `src/api/types/models.ts` untuk interface Product
+- Periksa kode penanganan form di komponen pembuatan/pembaruan produk
+
+### 2. Perbaikan untuk Masalah Upload Gambar
+
+Fungsionalitas upload gambar memerlukan peninjauan lengkap:
+
+1. Periksa konfigurasi bucket penyimpanan Supabase
+2. Verifikasi komponen upload menerima file dengan benar
+3. Pastikan penanganan yang benar dari data form
+4. Tambahkan penanganan error yang lebih baik dengan pesan detail
+
+## Kesimpulan
+
+Proyek Agro Mandiri memiliki dasar yang kuat dengan struktur database dan arsitektur keseluruhannya. Masalah saat ini terutama berfokus pada fungsionalitas dashboard admin, khususnya dengan manajemen produk dan upload gambar.
+
+Dengan mengatasi ketidakcocokan nama kolom dan memperbaiki fungsionalitas upload gambar, Anda dapat menyelesaikan dashboard admin dan beralih ke implementasi fitur sisi klien yang telah direncanakan sejak awal proyek.
+
+Pendekatan interaktif yang telah kita ambil dengan utilitas perbaikan database memberikan template yang baik untuk alat pengembangan di masa depan. Utilitas serupa dapat dibuat untuk tugas pemeliharaan lainnya, membuat proyek lebih kuat dan lebih mudah dikelola.

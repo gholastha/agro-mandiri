@@ -60,10 +60,7 @@ node_modules/
 *.njsproj
 *.sln
 *.sw?
-# OS specific
-# Task files
-tasks.json
-tasks/ 
+
 
 # windsurf rules
 .windsurfrules

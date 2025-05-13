@@ -6,12 +6,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
-import { applySeoColumnsMigration, addSeoColumnsDirectly, checkExecSqlAvailability } from '@/database/utils/applySeoColumns';
+import { applySeoColumnsMigration, addSeoColumnsDirectly } from '@/database/utils/applySeoColumns';
+import InsightContent from './insight';
 
 export default function FixDatabasePage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState<string>('');
-  const [sqlToCreate, setSqlToCreate] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>('')
 
   const handleFixDatabase = async () => {
     try {
@@ -58,6 +58,7 @@ export default function FixDatabasePage() {
         <TabsList className="mb-4">
           <TabsTrigger value="fix">Perbaiki Database</TabsTrigger>
           <TabsTrigger value="info">Informasi</TabsTrigger>
+          <TabsTrigger value="insight">Insight Agro Mandiri</TabsTrigger>
         </TabsList>
         
         <TabsContent value="fix">
@@ -85,12 +86,6 @@ export default function FixDatabasePage() {
                   <AlertTitle className="text-red-800">Error</AlertTitle>
                   <AlertDescription className="text-red-700">
                     {message}
-                    {sqlToCreate && (
-                      <div className="mt-4">
-                        <h4 className="font-semibold mb-2">SQL yang perlu dijalankan:</h4>
-                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-auto">{sqlToCreate}</pre>
-                      </div>
-                    )}
                   </AlertDescription>
                 </Alert>
               )}
@@ -128,38 +123,51 @@ export default function FixDatabasePage() {
         <TabsContent value="info">
           <Card>
             <CardHeader>
-              <CardTitle>Informasi Perbaikan</CardTitle>
+              <CardTitle>Informasi Database Agro Mandiri</CardTitle>
               <CardDescription>
-                Penjelasan masalah dan solusi yang diterapkan
+                Penjelasan mengenai struktur database dan perbaikan yang dilakukan
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <h3 className="text-lg font-semibold mb-2">Masalah</h3>
-              <p className="mb-4">
-                Dashboard admin mengalami error saat mencoba mengakses atau memperbarui produk karena beberapa kolom
-                yang dibutuhkan oleh kode frontend tidak ada di database, seperti yang ditunjukkan oleh error berikut:
-              </p>
-              <pre className="bg-gray-100 p-3 rounded text-sm mb-4 overflow-auto">
-                Error: Error updating product: "Could not find the 'keywords' column of 'products' in the schema cache"
-              </pre>
-              
-              <h3 className="text-lg font-semibold mb-2">Solusi</h3>
-              <p className="mb-4">
-                Alat perbaikan ini akan menambahkan kolom yang hilang ke tabel products agar sesuai dengan
-                skema yang diharapkan oleh kode frontend. Setelah kolom ditambahkan, dashboard admin akan berfungsi
-                dengan benar dan Anda dapat melanjutkan pengembangan.
-              </p>
-              
-              <h3 className="text-lg font-semibold mb-2">Catatan Teknis</h3>
-              <p>
-                Alat ini menggunakan beberapa metode untuk menambahkan kolom yang hilang:
-              </p>
-              <ol className="list-decimal pl-6 mb-4 space-y-1">
-                <li>Mencoba menggunakan fungsi RPC <code className="bg-gray-100 px-1 rounded">exec_sql</code> jika tersedia</li>
-                <li>Sebagai fallback, mencoba menggunakan Supabase API langsung untuk menambahkan kolom</li>
-              </ol>
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Struktur Database</h3>
+                <p>Database Agro Mandiri menggunakan Supabase sebagai backend dengan skema berikut:</p>
+                
+                <h4 className="font-semibold mt-4">Tabel Products</h4>
+                <p>Tabel ini berisi data produk dengan kolom-kolom berikut:</p>
+                <ul className="list-disc pl-5">
+                  <li>id (primary key)</li>
+                  <li>name (nama produk)</li>
+                  <li>description (deskripsi produk)</li>
+                  <li>price (harga)</li>
+                  <li>category_id (foreign key ke tabel categories)</li>
+                  <li>created_at (timestamp)</li>
+                  <li>updated_at (timestamp)</li>
+                </ul>
+                
+                <div className="mt-4 p-4 bg-muted rounded-lg">
+                  <h4 className="font-semibold mb-2">Masalah Database</h4>
+                  <p>Tabel products tidak memiliki kolom untuk data SEO yang dibutuhkan untuk fungsi admin panel:</p>
+                  <ul className="list-disc pl-5">
+                    <li>meta_title</li>
+                    <li>meta_description</li>
+                    <li>keywords</li>
+                  </ul>
+                  
+                  <h4 className="font-semibold mt-4 mb-2">Solusi</h4>
+                  <p>Fitur "Perbaiki Database" akan menambahkan kolom-kolom ini ke tabel products sehingga aplikasi dapat berfungsi dengan normal. Proses ini menggunakan dua metode:</p>
+                  <ol className="list-decimal pl-5">
+                    <li>Mencoba menambahkan kolom langsung ke database</li>
+                    <li>Jika metode pertama gagal, migrasi database akan dijalankan</li>
+                  </ol>
+                </div>
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        
+        <TabsContent value="insight">
+          <InsightContent />
         </TabsContent>
       </Tabs>
     </div>

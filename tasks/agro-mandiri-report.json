@@ -1,0 +1,132 @@
+{
+  "project_overview": {
+    "name": "Agro Mandiri E-Commerce",
+    "description": "Mobile-first e-commerce platform for Indonesian agricultural products",
+    "target_market": "Indonesian farmers and agricultural suppliers",
+    "main_categories": ["Fertilizer", "Pesticide", "Seed", "Equipment"],
+    "key_objectives": [
+      "Provide educational shopping experience",
+      "Support farmers through modern technology",
+      "Optimize user experience",
+      "Enable business scalability"
+    ]
+  },
+  "technical_stack": {
+    "frontend": {
+      "framework": "Next.js (App Router)",
+      "styling": "Tailwind CSS",
+      "ui_components": "shadcn/ui",
+      "state_management": "Zustand",
+      "validation": "Zod",
+      "animations": "Framer Motion"
+    },
+    "backend": {
+      "platform": "Supabase",
+      "database": "PostgreSQL",
+      "api": "REST API"
+    },
+    "integrations": {
+      "payment": ["Midtrans", "Xendit"],
+      "logistics": ["JNE", "SiCepat"],
+      "notifications": "Firebase"
+    }
+  },
+  "design_system": {
+    "color_palette": {
+      "primary": "#2E7D32",
+      "secondary": "#FFD700",
+      "accent": "#6D4C41",
+      "background": "#FFFFFF"
+    },
+    "typography": {
+      "font_family": "Inter",
+      "min_size": "16px",
+      "headings": {
+        "mobile": ["20px", "18px", "16px"],
+        "desktop": ["24px", "20px", "18px"]
+      }
+    },
+    "spacing": {
+      "padding": "16px+",
+      "border_radius": "8px",
+      "shadows": "opacity 0.2"
+    }
+  },
+  "loyalty_system": {
+    "badges": {
+      "regular_user": {
+        "name": "Pembeli Setia",
+        "icon": "shopping cart with gold star",
+        "benefit": "3% discount on purchases"
+      },
+      "farmer": {
+        "name": "Petani Hebat",
+        "levels": ["Pemula", "Pro", "Master"],
+        "benefits": ["Basic guidance", "5% discount", "Priority shipping"]
+      },
+      "seller": {
+        "name": "Penjual Unggul",
+        "icon": "store with gold star",
+        "benefit": "Featured product promotion"
+      }
+    }
+  },
+  "key_features": {
+    "client_side": {
+      "landing_page": {
+        "components": ["Header", "Mega Menu", "Hero Slider", "Category Section", "Featured Products", "Knowledge Section"],
+        "performance": "Load time < 2s"
+      },
+      "product_listing": {
+        "features": ["Search with autocomplete", "Advanced filters", "Sort options", "Wishlist"],
+        "performance": "Filter application < 1s"
+      },
+      "product_details": {
+        "components": ["Image carousel", "Dosage calculator", "Reviews", "Related products"],
+        "special_features": ["Zoom on tap", "Real-time shipping tracking"]
+      },
+      "shopping_cart": {
+        "features": ["Save for later", "Quantity adjustment", "Total calculation"],
+        "checkout": ["Multiple payment options", "Address management"]
+      }
+    },
+    "admin_dashboard": {
+      "modules": {
+        "analytics": ["Sales graphs", "Stock alerts", "User activity"],
+        "management": ["Products", "Categories", "Orders", "Users"],
+        "marketing": ["SEO", "Content management"],
+        "operations": ["Logistics", "Audit logs"]
+      }
+    }
+  },
+  "mobile_optimization": {
+    "design_principles": [
+      "Mobile-first approach",
+      "Touch-friendly interfaces",
+      "Compact navigation",
+      "Progressive loading"
+    ],
+    "performance_targets": {
+      "page_load": "< 2 seconds",
+      "image_optimization": "Next.js Image component",
+      "lazy_loading": ["Product cards", "Related products"],
+      "minimum_requirements": {
+        "network": "3G compatible",
+        "device": "Android with 2GB RAM"
+      }
+    }
+  },
+  "accessibility": {
+    "standards": {
+      "contrast_ratio": "4.5:1 minimum",
+      "touch_targets": "48x48px minimum",
+      "font_size": "16px minimum"
+    },
+    "features": [
+      "ARIA labels for badges",
+      "Keyboard navigation support",
+      "Form field validation feedback",
+      "Color blind friendly palette"
+    ]
+  }
+}

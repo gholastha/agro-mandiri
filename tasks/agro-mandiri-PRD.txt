@@ -1,0 +1,590 @@
+# Overview  
+Agro Mandiri is an E-Commerce platform designed for Indonesian agricultural products in four main categories: Fertilizer, Pesticide, Seed, and Equipment. The platform aims to provide an educational and user-friendly shopping solution that supports farmers and sellers through modern technology, with a focus on optimal user experience and business scalability.
+
+## Problem Statement
+Indonesian farmers face challenges in accessing quality agricultural products with proper guidance on usage. Traditional marketplaces lack specialized features for agricultural products, such as dose calculators and educational content. Sellers struggle with targeted marketing to the farming community.
+
+## Target Users
+- **Beginner Farmers**: Limited experience, need product guidance and simple UI
+- **Experienced Farmers**: Professional farmers focusing on efficiency and product quality
+- **Sellers**: Agricultural product suppliers seeking efficient product management
+- **Administrators**: Platform managers requiring analytics and user management tools
+
+## Value Proposition
+- Educational shopping experience with integrated knowledge base
+- Specialized features for agricultural products (dose calculators, application guides)
+- Clean, mobile-first interface accessible on low-end devices
+- Loyalty program to incentivize repeat purchases
+- Comprehensive admin tools for product and order management
+
+# Core Features  
+
+## Client Side Features
+
+### Landing Page
+- **Description**: Main homepage with promotional elements and intuitive navigation
+- **Key Components**: 
+  - Header with logo, search bar, wishlist, shopping cart, and user avatar
+  - Mega navigation menu with categories
+  - Hero image slider with call-to-action buttons
+  - Category sections displaying the four main product types
+  - Featured products, special offers, knowledge section, and testimonials
+- **Importance**: Creates first impressions, facilitates navigation, and promotes featured products
+
+### Product Listing
+- **Description**: Pages displaying products with search, sort, and filter options
+- **Key Components**:
+  - Category hero banner
+  - Product search with autocomplete
+  - Sort options (Price: Low-High, Rating, Newest)
+  - Product filters by price, brand, type, and specifications
+  - Grid/thumbnail product views with wishlist, add to cart, rating, and badges
+- **Importance**: Helps users find products that match their specific needs efficiently
+
+### Product Details
+- **Description**: Comprehensive product information pages with interactive tools
+- **Key Components**:
+  - Breadcrumb navigation
+  - Image carousel with zoom functionality
+  - Complete product information (description, type, benefits, application)
+  - Price customization based on variants, quantity, and packages
+  - Dose calculator for fertilizers and pesticides
+  - Reviews and ratings section
+  - Related products suggestions
+- **Importance**: Provides detailed information and educational content to guide purchase decisions
+
+### Shopping Cart
+- **Description**: Cart management before checkout
+- **Key Components**:
+  - Checkout stepper (Cart > Shipping > Payment)
+  - Cart items list with quantity adjustment
+  - Save cart for later functionality
+  - Price breakdown with subtotal, tax, and final amount
+  - Checkout button
+- **Importance**: Streamlines the purchase process and allows users to review selections
+
+### Shipping
+- **Description**: Shipping and payment management
+- **Key Components**:
+  - Shipping form with dynamic assistance
+  - Real-time tracking capabilities
+  - Multiple payment options (E-Wallet, Installments, COD)
+  - Invoice generation with payment instructions
+  - Confirmation emails
+- **Importance**: Ensures smooth delivery process and payment handling
+
+### User Profile
+- **Description**: Personal account management
+- **Key Components**:
+  - User account and profile settings
+  - Address management
+  - Shopping cart and wishlist
+  - Purchase history
+  - Order tracking
+  - Loyalty program status and badges
+  - Option to register as a farmer/seller
+- **Importance**: Centralizes user information and enables personalized experiences
+
+## Admin Dashboard Features
+
+### Summary Dashboard
+- **Description**: Overview of sales and inventory data
+- **Key Components**: Charts, statistics, key performance indicators
+- **Importance**: Provides quick insights into business performance
+
+### Product/Category Management
+- **Description**: Tools for managing products and categories
+- **Key Components**: CRUD operations for products and categories, bulk upload/edit
+- **Importance**: Enables efficient product catalog management
+
+### Order/User Management
+- **Description**: Tools for monitoring orders and users
+- **Key Components**: Order list with status, user profiles with activity history
+- **Importance**: Facilitates customer service and order fulfillment
+
+### SEO Management
+- **Description**: Tools for search engine optimization
+- **Key Components**: Metadata editor, keyword management, performance tracking
+- **Importance**: Improves visibility in search engines
+
+### Report and Analytics
+- **Description**: Comprehensive performance reporting
+- **Key Components**: Sales reports, popular products, user behavior, data export
+- **Importance**: Supports data-driven decision making
+
+### Logistics Management
+- **Description**: Shipping coordination tools
+- **Key Components**: Logistics integration, shipping rates management
+- **Importance**: Ensures efficient delivery operations
+
+### Content Management
+- **Description**: Knowledge section article management
+- **Key Components**: WYSIWYG editor, article categories, publication scheduling
+- **Importance**: Maintains the educational component of the platform
+
+# User Experience  
+
+## User Personas
+
+### Beginner Farmer (Pak Budi)
+- **Background**: 1-2 years of farming experience, basic smartphone skills
+- **Goals**: Find quality products with clear usage instructions
+- **Pain Points**: Overwhelmed by technical jargon, uncertain about product selection
+- **Key Needs**: Dose calculator, simple UI, educational content
+
+### Experienced Farmer (Ibu Siti)
+- **Background**: 10+ years farming, tech-savvy, manages large farm
+- **Goals**: Find specific products efficiently, track orders, get volume discounts
+- **Pain Points**: Time constraints, need for bulk orders with proper tracking
+- **Key Needs**: Advanced filters, flexible payment options, order tracking
+
+### Seller (PT Agri Jaya)
+- **Background**: Agricultural supplier with multiple product lines
+- **Goals**: Showcase products effectively, monitor sales, manage inventory
+- **Pain Points**: Complex product attributes, inventory management
+- **Key Needs**: Product management tools, sales reports, logistics integration
+
+### Administrator (Tim)
+- **Background**: Platform manager responsible for operations
+- **Goals**: Monitor platform performance, ensure smooth operations
+- **Pain Points**: Need for insights across multiple dimensions
+- **Key Needs**: Analytics dashboard, user management tools, audit logs
+
+## Key User Flows
+
+### Product Discovery and Purchase
+1. User visits landing page and browses categories
+2. User searches or filters products by criteria
+3. User views product details, reads description and reviews
+4. User adds product to cart, adjusts quantity
+5. User proceeds to checkout, enters shipping details
+6. User selects payment method and completes purchase
+7. User receives confirmation email with tracking information
+
+### Account Management
+1. User creates account or logs in
+2. User updates profile information and addresses
+3. User views order history and tracks active orders
+4. User manages wishlist items
+5. User views loyalty status and available benefits
+
+### Seller Operations
+1. Seller logs into dashboard
+2. Seller adds/edits product listings
+3. Seller monitors orders and inventory
+4. Seller views sales reports and analytics
+5. Seller manages logistics and shipping options
+
+### Admin Operations
+1. Admin reviews dashboard summaries
+2. Admin manages product catalog and categories
+3. Admin oversees user accounts and orders
+4. Admin generates reports and analyzes data
+5. Admin configures promotions and special offers
+
+## UI/UX Considerations
+
+### Design Aesthetics
+- **Color Palette**: 
+  - Leaf Green (#2E7D32): Primary color for active elements
+  - Clean White (#FFFFFF): Dominant background for clean impression
+  - Gold (#FFD700): Accent for badges, CTAs, and premium elements
+  - Brown (#6D4C41): Used only for subtle borders and dividers
+- **Typography**: Inter font, minimum 16px for readability
+- **Visual Elements**: Agricultural icons, rounded corners (8px), subtle shadows
+
+### Mobile-First Approach
+- Designed for 320px-768px screens
+- Touch-friendly navigation with large tap targets
+- Optimized performance for 3G connections and low-end devices
+- Simplified layouts with clear visual hierarchy
+
+### Loyalty Badges System
+- **Regular Buyers**: "Loyal Buyer" badge with shopping cart icon
+- **Farmers**: "Great Farmer" badge with leaf icon (Beginner, Pro, Master levels)
+- **Sellers**: "Premium Seller" badge with gold star icon
+- **Benefits**: Discounts, priority support, exclusive features
+- **Placement**: Next to user avatar, profile pages, product reviews
+
+### Accessibility Considerations
+- Minimum 16px font size
+- High contrast text-to-background ratio
+- Touch targets minimum 44x44px
+- Alternative text for images
+- Support for screen readers
+
+# Technical Architecture  
+
+## System Components
+
+### Frontend Layer
+- **Framework**: Next.js (App Router) for server-side rendering and SEO
+- **UI Components**: Tailwind CSS with shadcn/ui for consistent styling
+- **State Management**: Zustand for cart, filters, and UI state
+- **Form Validation**: Zod for input validation
+- **Progressive Web App**: Offline access and app installation capabilities
+- **Responsive Design**: Mobile-first approach with adaptive layouts
+
+### Backend Layer
+- **Database**: Supabase PostgreSQL for relational data storage
+- **Authentication**: Supabase Auth with social login options
+- **Storage**: Supabase Storage for product images and assets
+- **API**: REST API for client-server communication
+- **Real-time Features**: Supabase Realtime for order tracking updates
+
+### Integration Layer
+- **Payment Gateway**: Midtrans/Xendit for payment processing
+- **Logistics**: JNE/SiCepat API for shipping rates and tracking
+- **Push Notifications**: Firebase for promotional and order status updates
+- **Analytics**: Google Analytics for user behavior tracking
+
+## Data Models
+
+### Products
+- Product ID, name, description, price, stock, category
+- Variants (weight, size, formulation)
+- Type, benefits, application information
+- Manufacturer details
+- Media (images, videos, documentation)
+
+### Users
+- User ID, name, email, phone, addresses
+- User type (customer, farmer, seller, admin)
+- Order history, wishlist, cart
+- Loyalty level and badges
+- Preferences and settings
+
+### Orders
+- Order ID, user ID, date, status
+- Line items (product ID, quantity, price)
+- Shipping details and tracking
+- Payment information and status
+- Invoices and receipts
+
+### Content
+- Articles, guides, application instructions
+- Categories and tags
+- Publication date and author
+- Media attachments
+
+## APIs and Integrations
+
+### Internal APIs
+- Product API: CRUD operations for products
+- User API: Authentication and profile management
+- Order API: Order creation and management
+- Content API: Knowledge base article management
+
+### External Integrations
+- Payment Gateway API: Process payments securely
+- Logistics API: Calculate shipping rates, generate labels, track packages
+- Notification Service: Send email and push notifications
+- Analytics API: Track user behavior and sales performance
+
+## Infrastructure Requirements
+
+### Hosting
+- Next.js application on Vercel or similar platform
+- Supabase for database and authentication
+- CDN for static assets and media
+
+### Performance
+- Server-side rendering for main pages
+- Image optimization and lazy loading
+- Caching strategies for product data
+- CDN for global content delivery
+
+### Security
+- HTTPS for all connections
+- Authentication with JWT tokens
+- Input validation and sanitization
+- Regular security audits
+
+### Monitoring
+- Application performance monitoring
+- Error tracking and logging
+- User behavior analytics
+- Server health monitoring
+
+# Development Roadmap  
+
+## Phase 1: MVP (Minimum Viable Product)
+
+### Foundation Components
+- Basic user authentication (register, login)
+- Product catalog with categories
+- Simple product search and filtering
+- Product detail pages with basic information
+- Shopping cart functionality
+- Checkout process with COD payment option
+- User profile with order history
+- Basic admin dashboard for product management
+
+### Implementation Details
+- Setup Next.js project with Tailwind CSS
+- Implement Supabase integration for authentication and database
+- Create core UI components with shadcn/ui
+- Develop product browsing and search functionality
+- Implement basic shopping cart with Zustand
+- Create simplified checkout flow
+- Develop minimal admin interface
+
+## Phase 2: Enhanced Features
+
+### User Experience Improvements
+- Advanced search with autocomplete
+- Comprehensive filtering options
+- Product variants and customization
+- Wishlist functionality
+- Improved product detail pages with tabs
+- Dose calculator for fertilizers and pesticides
+- Related products recommendations
+- Enhanced mobile responsiveness
+
+### E-commerce Enhancements
+- Multiple payment method integration
+- Order tracking capabilities
+- Save cart for later feature
+- Address management
+- Email notifications for orders
+- Basic loyalty badges implementation
+- Expanded admin dashboard with order management
+
+### Implementation Details
+- Integrate payment gateway (Midtrans/Xendit)
+- Develop dose calculator with Zod validation
+- Implement wishlist with Zustand state management
+- Create email notification templates
+- Enhance admin dashboard with order monitoring
+- Develop loyalty badge system foundations
+
+## Phase 3: Full Platform
+
+### Advanced Features
+- Complete loyalty program with benefits
+- Knowledge base with educational content
+- User reviews and ratings
+- Seller profiles and dashboards
+- Advanced analytics and reporting
+- SEO optimization tools
+- Real-time order tracking
+- Push notifications
+
+### Integration Expansions
+- Logistics integration for shipping rates
+- Advanced payment options (installments)
+- Social media sharing
+- Export/import functionality for bulk operations
+- Inventory management system
+- Marketing tools (promotions, discounts)
+
+### Implementation Details
+- Develop knowledge base content management
+- Implement review and rating system
+- Create seller dashboard interfaces
+- Integrate logistics APIs
+- Develop marketing and promotion tools
+- Implement push notification system
+- Create advanced analytics dashboards
+
+## Phase 4: Optimization and Scaling
+
+### Performance Enhancements
+- Image optimization pipeline
+- Code splitting and lazy loading
+- Server-side caching strategies
+- Database query optimization
+- API performance improvements
+- Mobile app conversion (React Native)
+
+### Business Growth Features
+- B2B wholesale portal
+- Subscription options for regular products
+- Advanced inventory forecasting
+- Personalized recommendations using AI
+- Multi-language support
+- Expanded payment options
+- Advanced loyalty and rewards program
+
+### Implementation Details
+- Implement performance monitoring
+- Develop caching strategies
+- Create B2B interfaces and workflows
+- Integrate AI recommendation engine
+- Develop language localization system
+- Enhance loyalty program with advanced features
+
+# Logical Dependency Chain
+
+## Foundation Layer (Build First)
+1. User authentication and basic profile
+2. Product catalog with categories
+3. Simple product search and listing
+4. Product detail pages (basic)
+5. Shopping cart functionality
+6. Checkout process (simple)
+7. Admin product management
+
+## Core Experience Layer
+8. Enhanced product filtering and search
+9. Improved product details with tabs
+10. User profile enhancements
+11. Wishlist functionality
+12. Payment method integration
+13. Order tracking capabilities
+14. Basic loyalty badges
+
+## Enhanced Functionality Layer
+15. Dose calculator implementation
+16. Knowledge base articles
+17. User reviews and ratings
+18. Email notifications system
+19. Save cart for later feature
+20. Advanced admin dashboard
+
+## Advanced Features Layer
+21. Complete loyalty program with benefits
+22. Seller profiles and dashboards
+23. Logistics integration
+24. Push notifications
+25. Advanced analytics and reporting
+26. Marketing tools (promotions, discounts)
+
+## Optimization Layer
+27. Performance optimizations
+28. SEO enhancements
+29. Mobile app conversion
+30. B2B wholesale features
+31. Personalized recommendations
+32. Multi-language support
+
+# Risks and Mitigations  
+
+## Technical Challenges
+
+### Challenge: Performance on Low-End Devices
+- **Risk**: Poor performance on farmers' low-spec smartphones with 3G connections
+- **Mitigation**: 
+  - Implement aggressive code splitting and lazy loading
+  - Optimize image delivery with proper sizing and compression
+  - Minimize JavaScript bundle size
+  - Implement service workers for offline capabilities
+
+### Challenge: Complex Product Attributes
+- **Risk**: Difficulty in modeling agricultural products with many variable attributes
+- **Mitigation**:
+  - Design flexible product schema with customizable attributes
+  - Create specialized input fields for different product types
+  - Implement robust validation rules with Zod
+  - Develop admin tools for bulk editing
+
+### Challenge: Integration Complexity
+- **Risk**: Difficulties integrating multiple third-party services (payment, logistics)
+- **Mitigation**:
+  - Build modular integration layer with adapter pattern
+  - Implement comprehensive error handling and fallbacks
+  - Create thorough testing suite for integrations
+  - Maintain detailed integration documentation
+
+## MVP Scoping
+
+### Challenge: Feature Prioritization
+- **Risk**: Including too many features in initial release, delaying launch
+- **Mitigation**:
+  - Focus on core shopping experience for MVP
+  - Implement minimum viable version of each critical feature
+  - Use feature flags to gradually roll out enhancements
+  - Gather user feedback early to guide further development
+
+### Challenge: Balancing Quality and Speed
+- **Risk**: Rushing implementation may compromise quality
+- **Mitigation**:
+  - Establish quality standards and automated testing
+  - Implement continuous integration/deployment
+  - Focus on stability of core features before adding new ones
+  - Create robust error monitoring and reporting
+
+## Resource Constraints
+
+### Challenge: Development Capacity
+- **Risk**: Limited developer resources for concurrent feature development
+- **Mitigation**:
+  - Prioritize features based on user impact
+  - Use modular architecture to enable parallel development
+  - Leverage existing libraries and components where possible
+  - Implement clear documentation for efficient onboarding
+
+### Challenge: Content Creation
+- **Risk**: Insufficient educational content for knowledge base at launch
+- **Mitigation**:
+  - Start with minimal essential content focused on top products
+  - Create content templates to standardize and accelerate creation
+  - Consider partnerships with agricultural experts for content
+  - Establish gradual content expansion plan post-launch
+
+# Appendix  
+
+## Product Categories and Classifications
+
+### Fertilizer
+- **Types**: Organic, Chemical, NPK, Micronutrient
+- **Benefits**: Yield Increase, Soil Health, Root Development
+- **Application**: Method, Dosage, Timing, Compatibility
+- **Manufacturers**: Local and International Brands
+
+### Pesticide
+- **Types**: Insecticide, Fungicide, Herbicide, Biological
+- **Uses**: Pest Control, Disease Prevention, Weed Management
+- **Application**: Spraying Technique, Safety Precautions, Timing
+- **Manufacturers**: Certified Producers with Safety Standards
+
+### Seed
+- **Varieties**: Rice, Corn, Vegetables, Fruits, Cash Crops
+- **Classes**: Hybrid, Open-Pollinated, Certified, Foundation
+- **Advantages**: Yield Potential, Disease Resistance, Climate Adaptation
+- **Manufacturers**: Breeding Companies, Research Institutions
+
+### Equipment
+- **Tools**: Sprayers, Tillers, Irrigation Systems, Harvesting Tools
+- **Main Functions**: Soil Preparation, Planting, Crop Protection, Harvesting
+- **Key Specifications**: Capacity, Power Source, Material, Durability
+- **Manufacturers**: Agricultural Equipment Producers
+
+## Technological Stack Details
+
+### Frontend
+- **Next.js**: Server-side rendering for SEO and performance
+- **Tailwind CSS**: Utility-first CSS framework for consistent styling
+- **shadcn/ui**: Accessible UI components built on Radix UI
+- **Zustand**: Lightweight state management for React
+- **Zod**: TypeScript-first schema validation
+
+### Backend
+- **Supabase**: PostgreSQL database with built-in authentication and storage
+- **REST API**: Standardized API endpoints for data access
+- **Webhooks**: Event-driven architecture for integrations
+
+### DevOps
+- **Vercel**: Hosting and deployment platform for Next.js
+- **GitHub Actions**: CI/CD pipeline for automated testing and deployment
+- **Monitoring**: Application performance and error tracking
+
+## Research Findings
+
+### User Research
+- Indonesian farmers increasingly use smartphones for information
+- 65% of farmers surveyed prefer COD payment methods
+- Educational content is a key factor in purchase decisions
+- Simple UI with large touch targets is essential for field use
+
+### Market Analysis
+- Agricultural e-commerce growing at 15% annually in Indonesia
+- Competitors lack specialized features for agricultural products
+- Opportunity for loyalty program to drive repeat purchases
+- Educational content creates competitive advantage
+
+### Technical Evaluation
+- Next.js enables both SEO and interactive features
+- Supabase provides cost-effective backend with built-in auth
+- Progressive Web App approach reaches widest audience
+- Mobile-first design essential for target demographic

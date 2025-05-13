@@ -1,0 +1,45 @@
+[23:56:08.052] Running build in Washington, D.C., USA (East) – iad1
+[23:56:08.053] Build machine configuration: 2 cores, 8 GB
+[23:56:08.068] Cloning github.com/gholastha/agro-mandiri (Branch: main, Commit: 6b803c2)
+[23:56:08.243] Previous build caches not available
+[23:56:08.636] Cloning completed: 568.000ms
+[23:56:09.011] Running "vercel build"
+[23:56:09.395] Vercel CLI 41.7.3
+[23:56:09.686] Warning: Detected "engines": { "node": ">=18.x" } in your package.json that will automatically upgrade when a new major Node.js Version is released. Learn More: http://vercel.link/node-version
+[23:56:09.696] Running "install" command: npm install...
+[23:56:27.443] 
+[23:56:27.444] added 495 packages, and audited 496 packages in 18s
+[23:56:27.444] 
+[23:56:27.445] 149 packages are looking for funding
+[23:56:27.445]   run npm fund for details
+[23:56:27.445] 
+[23:56:27.445] found 0 vulnerabilities
+[23:56:27.492] Detected Next.js version: 15.3.1
+[23:56:27.493] Running "npm run build"
+[23:56:27.608] 
+[23:56:27.610] > agro-mandiri-new@0.1.0 build
+[23:56:27.610] > next build
+[23:56:27.610] 
+[23:56:28.190]  ⚠ Invalid next.config.ts options detected: 
+[23:56:28.190]  ⚠     Unrecognized key(s) in object: 'swcMinify'
+[23:56:28.191]  ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+[23:56:28.197] Attention: Next.js now collects completely anonymous telemetry regarding usage.
+[23:56:28.198] This information is used to shape Next.js' roadmap and prioritize features.
+[23:56:28.198] You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[23:56:28.198] https://nextjs.org/telemetry
+[23:56:28.198] 
+[23:56:28.300]    ▲ Next.js 15.3.1
+[23:56:28.302] 
+[23:56:28.328]    Creating an optimized production build ...
+[23:56:40.272] Failed to compile.
+[23:56:40.273] 
+[23:56:40.273] ./src/app/admin/orders/[id]/page.tsx
+[23:56:40.273] Module not found: Can't resolve '@/components/ui/separator'
+[23:56:40.273] 
+[23:56:40.273] https://nextjs.org/docs/messages/module-not-found
+[23:56:40.273] 
+[23:56:40.286] 
+[23:56:40.286] > Build failed because of webpack errors
+[23:56:40.320] Error: Command "npm run build" exited with 1
+[23:56:40.667] 
+[23:56:43.796] Exiting build container
